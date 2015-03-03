@@ -44,6 +44,7 @@ public class Database {
 	public Database() {
 		connection = null;
 		userDAO = new UserDAO(this);
+		batchDAO = new BatchDAO(this);
 	}
 	
 	/**

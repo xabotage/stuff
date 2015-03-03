@@ -19,12 +19,14 @@ public class UserDAO {
 	public User readUser(int userId) throws DatabaseException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		User user = new User();
+		User user = null;
 		try {
 			String getUserSQL = "SELECT * FROM Users where userId = ?";
 			ps = db.getConnection().prepareStatement(getUserSQL);
+			ps.setInt(1, userId);
 			rs = ps.executeQuery();
 			while(rs.next()) {
+				user = new User();
 				user.setUserId(rs.getInt("userId"));
 				user.setFirstName(rs.getString("firstName"));
 				user.setLastName(rs.getString("lastName"));
@@ -83,13 +85,13 @@ public class UserDAO {
 			String updateUserSQL = "UPDATE Users SET firstName = ?, lastName = ?, password = ?, email = ?, "
 					+ "currentBatch = ?, indexedRecords = ? WHERE userId = ?";
 			ps = db.getConnection().prepareStatement(updateUserSQL);
-			ps.setString(0, user.getFirstName());
-			ps.setString(1,  user.getLastName());
-			ps.setString(2, user.getPassword());
-			ps.setString(3, user.getEmail());
-			ps.setInt(4, user.getCurrentBatch());
-			ps.setInt(5, user.getIndexedRecords());
-			ps.setInt(6, user.getUserId());
+			ps.setString(1, user.getFirstName());
+			ps.setString(2,  user.getLastName());
+			ps.setString(3, user.getPassword());
+			ps.setString(4, user.getEmail());
+			ps.setInt(5, user.getCurrentBatch());
+			ps.setInt(6, user.getIndexedRecords());
+			ps.setInt(7, user.getUserId());
 			if (ps.executeUpdate() != 1) {
 				throw new DatabaseException("Could not update user");
 			}

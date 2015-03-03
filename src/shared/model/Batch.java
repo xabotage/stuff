@@ -27,6 +27,10 @@ public class Batch {
 	 */
 	private boolean isIndexed;
 	/**
+	 * The userId of the user assigned to complete this batch
+	 */
+	private int assignedUser;
+	/**
 	 * The record objects associated with an indexed batch.
 	 */
 	private List<Record> records;
@@ -74,6 +78,18 @@ public class Batch {
 		return isIndexed;
 	}
 	/**
+	 * @return the assignedUser
+	 */
+	public int getAssignedUser() {
+		return assignedUser;
+	}
+	/**
+	 * @param assignedUser the assignedUser to set
+	 */
+	public void setAssignedUser(int assignedUser) {
+		this.assignedUser = assignedUser;
+	}
+	/**
 	 * @param isIndexed the isIndexed to set
 	 */
 	public void setIndexed(boolean isIndexed) {
@@ -94,5 +110,13 @@ public class Batch {
 	
 	public Batch() {
 		batchId = -1;
+	}
+
+	public Batch(int batchId, int projectId, String imageFile, boolean isIndexed, int assignedUser) {
+		this.batchId = batchId;
+		this.projectId = projectId;
+		this.imageFile = imageFile;
+		this.isIndexed = isIndexed;
+		this.assignedUser = assignedUser;
 	}
 }
