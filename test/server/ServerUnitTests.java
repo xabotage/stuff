@@ -115,7 +115,7 @@ public class ServerUnitTests {
 	public static void main(String[] args) {
 		
 		String[] testClasses = new String[] {
-				"server.database.BatchDAOUnitTests",
+				"server.database.TestBatchDAO",
 				"server.ServerUnitTests"
 		};
 

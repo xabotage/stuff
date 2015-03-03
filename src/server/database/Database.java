@@ -45,6 +45,7 @@ public class Database {
 		connection = null;
 		userDAO = new UserDAO(this);
 		batchDAO = new BatchDAO(this);
+		projectDAO = new ProjectDAO(this);
 	}
 	
 	/**

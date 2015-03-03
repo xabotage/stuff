@@ -1,5 +1,7 @@
 package shared.model;
 
+import org.w3c.dom.Element;
+
 /**
  * Model class for a project or collection of batches needing to be indexed
  * @author phelpsdb
@@ -85,6 +87,41 @@ public class Project {
 	 */
 	public void setRecordHeight(int recordHeight) {
 		this.recordHeight = recordHeight;
+	}
+	
+	public Project() {
+		projectId = -1;
+	}
+	
+	public Project(String title, int recordsPerImage, int recordHeight, int firstYCoord) {
+		this.title = title;
+		this.recordsPerImage = recordsPerImage;
+		this.recordHeight = recordHeight;
+		this.firstYCoord = firstYCoord;
+	}
+	
+	public Project(Element projectElement) {
+		title = DataImporter.getValue((Element)projectElement.getElementsByTagName("title").item(0));
+		recordsPerImage = Integer.parseInt(DataImporter.getValue(
+				 	(Element)projectElement.getElementsByTagName("recordsperimage").item(0))
+		);
+
+		firstYCoord = Integer.parseInt(DataImporter.getValue(
+		(Element)projectElement.getElementsByTagName("firstycoord").item(0)));
+
+		recordHeight = Integer.parseInt(DataImporter.getValue(
+		(Element)projectElement.getElementsByTagName("recordheight").item(0)));
+
+		Element fieldsElement = (Element)projectElement.getElementsByTagName("fields").item(0);
+		NodeList fieldElements = fieldsElement.getElementsByTagName("field");
+		for(int i = 0; i < fieldElements.getLength(); i++) {
+			fields.add(new Field((Element)fieldElements.item(i)));
+		}
+		Element imagesElement = (Element)projectElement.getElementsByTagName("images").item(0);
+		NodeList imageElements = imagesElement.getElementsByTagName("image");
+		for(int i = 0; i < imageElements.getLength(); i++) {
+			images.add(new Image((Element)imageElements.item(i)));
+		}
 	}
 	
 }

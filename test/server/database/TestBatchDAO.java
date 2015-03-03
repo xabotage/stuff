@@ -5,10 +5,9 @@ import java.util.List;
 import org.junit.* ;
 
 import shared.model.*;
-import server.database.*;
 import static org.junit.Assert.* ;
 
-public class BatchDAOUnitTests {
+public class TestBatchDAO {
 	
 	@BeforeClass
 	public static void classSetup() throws Exception {
