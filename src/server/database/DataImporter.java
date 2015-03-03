@@ -1,6 +1,8 @@
 package server.database;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,16 +11,31 @@ import org.w3c.dom.*;
 
 public class DataImporter {
 	
-	public static void importDataFromFile(String filename) {
+	public static IndexerData importDataFromFile(String filename) {
 		File xmlFile = new File(filename);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(xmlFile); //Can use URI instead of xmlFile
-		//optional, but recommended. Read this
-		// http://stackoverflow.com/questions/13786607/normalization-in-domparsing-with-java-how-does-it-work
+		try {
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(xmlFile);
+		} catch(IOException e) {
+			System.out.printf("Could not load xml: %s", e.printStackTrace());
+			return null;
+		}
 		doc.getDocumentElement().normalize();
 		Element root = doc.getDocumentElement();
-		indexerData = new IndexerData(root);
+		return new IndexerData(root);
+	}
+	
+	public static ArrayList<Element> getChildElements(Node node) {
+		ArrayList <Element> result = new ArrayList<Element>();
+		NodeList children = node.getChildNodes();
+		for(int i = 0; i < children.getLength(); i ++) {
+			Node child = children.item(i);
+			if(child.getNodeType() == Node.ELEMENT_NODE){
+				result.add((Element)child);
+			}
+		}
+		return result;
 	}
 	
 	public static String getValue(Element element) {

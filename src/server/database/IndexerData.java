@@ -1,26 +1,28 @@
 package server.database;
 
+import java.util.List;
 import java.util.ArrayList;
-
 import org.w3c.dom.*;
 
+import shared.model.*;
+
+
 public class IndexerData {
+	private List<User> users;
+	private List<Project> projects;
 	
 	public IndexerData(Element rootElement) {
-		private ArrayList<User> users = new ArrayList<User>();
-		private ArrayList<Project> projects = new ArrayList<Project>();
-		public IndexerData(Element root) {
+		users = new ArrayList<User>();
+		projects = new ArrayList<Project>();
 		ArrayList<Element> rootElements = DataImporter.getChildElements(root);
 		ArrayList<Element> userElements =
 		DataImporter.getChildElements(rootElements.get(0));
 		for(Element userElement : userElements) {
-		users.add(new User(userElement));
+			users.add(new User(userElement));
 		}
-		ArrayList<Element> projectElements =
-		DataImporter.getChildElements(rootElements.get(1));
+		ArrayList<Element> projectElements = DataImporter.getChildElements(rootElements.get(1));
 		for(Element projectElement : projectElements) {
-		projects.add(new Project(projectElement));
-		}
+			projects.add(new Project(projectElement));
 		}
 	}
 
