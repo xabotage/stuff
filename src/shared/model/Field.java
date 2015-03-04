@@ -1,5 +1,9 @@
 package shared.model;
 
+import org.w3c.dom.Element;
+
+import server.database.DataImporter;
+
 /**
  * Model class describing attributes of a field or column in a project
  * @author phelpsdb
@@ -117,6 +121,18 @@ public class Field {
 	 */
 	public void setKnownData(String knownData) {
 		this.knownData = knownData;
+	}
+	
+	public Field() {
+		fieldId = -1;
+	}
+	
+	public Field(Element fieldElement) {
+		title = DataImporter.getValue((Element)fieldElement.getElementsByTagName("title").item(0));
+		xCoord = Integer.parseInt(DataImporter.getValue((Element)fieldElement.getElementsByTagName("xCoord").item(0)));
+		width = Integer.parseInt(DataImporter.getValue((Element)fieldElement.getElementsByTagName("width").item(0)));
+		helpUrl = DataImporter.getValue((Element)fieldElement.getElementsByTagName("helphtml").item(0));
+		knownData = DataImporter.getValue((Element)fieldElement.getElementsByTagName("knowndata").item(0));
 	}
 	
 }

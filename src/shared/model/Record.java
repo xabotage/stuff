@@ -1,6 +1,9 @@
 package shared.model;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.w3c.dom.*;
 
 /**
  * Model class for a Record or row of information in a batch
@@ -55,6 +58,19 @@ public class Record {
 	 */
 	public void setFieldValues(List<FieldValue> fieldValues) {
 		this.fieldValues = fieldValues;
+	}
+	
+	public Record() {
+		recordId = -1;
+	}
+	
+	public Record(Element recordElement) {
+		Element valuesRootElement = (Element)recordElement.getElementsByTagName("values").item(0);
+		NodeList valueElements = valuesRootElement.getElementsByTagName("value");
+		fieldValues = new ArrayList<FieldValue>();
+		for(int i = 0; i < valueElements.getLength(); i++) {
+			fieldValues.add(new FieldValue((Element)valueElements.item(i)));
+		}
 	}
 	
 }

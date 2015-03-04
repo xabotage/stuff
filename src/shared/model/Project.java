@@ -1,6 +1,12 @@
 package shared.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import server.database.DataImporter;
 
 /**
  * Model class for a project or collection of batches needing to be indexed
@@ -28,6 +34,14 @@ public class Project {
 	 * The height in pixels of each record on each batch
 	 */
 	private int recordHeight;
+	/**
+	 * the Fields associated with this project
+	 */
+	private List<Field> fields;
+	/**
+	 * the Batches associated with this project
+	 */
+	private List<Batch> batches;
 	/**
 	 * @return the projectId
 	 */
@@ -89,6 +103,30 @@ public class Project {
 		this.recordHeight = recordHeight;
 	}
 	
+	/**
+	 * @return the fields
+	 */
+	public List<Field> getFields() {
+		return fields;
+	}
+	/**
+	 * @param fields the fields to set
+	 */
+	public void setFields(List<Field> fields) {
+		this.fields = fields;
+	}
+	/**
+	 * @return the batches
+	 */
+	public List<Batch> getBatches() {
+		return batches;
+	}
+	/**
+	 * @param batches the batches to set
+	 */
+	public void setBatches(List<Batch> batches) {
+		this.batches = batches;
+	}
 	public Project() {
 		projectId = -1;
 	}
@@ -103,24 +141,27 @@ public class Project {
 	public Project(Element projectElement) {
 		title = DataImporter.getValue((Element)projectElement.getElementsByTagName("title").item(0));
 		recordsPerImage = Integer.parseInt(DataImporter.getValue(
-				 	(Element)projectElement.getElementsByTagName("recordsperimage").item(0))
-		);
+				 	(Element)projectElement.getElementsByTagName("recordsperimage").item(0)));
 
 		firstYCoord = Integer.parseInt(DataImporter.getValue(
-		(Element)projectElement.getElementsByTagName("firstycoord").item(0)));
+				(Element)projectElement.getElementsByTagName("firstycoord").item(0)));
 
 		recordHeight = Integer.parseInt(DataImporter.getValue(
-		(Element)projectElement.getElementsByTagName("recordheight").item(0)));
+				(Element)projectElement.getElementsByTagName("recordheight").item(0)));
 
+		fields = new ArrayList<Field>();
 		Element fieldsElement = (Element)projectElement.getElementsByTagName("fields").item(0);
 		NodeList fieldElements = fieldsElement.getElementsByTagName("field");
 		for(int i = 0; i < fieldElements.getLength(); i++) {
 			fields.add(new Field((Element)fieldElements.item(i)));
 		}
-		Element imagesElement = (Element)projectElement.getElementsByTagName("images").item(0);
-		NodeList imageElements = imagesElement.getElementsByTagName("image");
+		
+		
+		Element imagesRootElement = (Element)projectElement.getElementsByTagName("images").item(0);
+		NodeList imageElements = imagesRootElement.getElementsByTagName("image");
+		batches = new ArrayList<Batch>();
 		for(int i = 0; i < imageElements.getLength(); i++) {
-			images.add(new Image((Element)imageElements.item(i)));
+			batches.add(new Batch((Element)imageElements.item(i)));
 		}
 	}
 	

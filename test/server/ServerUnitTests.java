@@ -43,7 +43,7 @@ public class ServerUnitTests {
 	
 	@Test
 	public void testReadUser() throws Exception {
-		User createdUser = new User(-1, "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
+		User createdUser = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
 		db.getUserDAO().createUser(createdUser);
 		User gotUser = db.getUserDAO().readUser(createdUser.getUserId());
 		assertEquals(gotUser.getFirstName(), createdUser.getFirstName());
@@ -56,8 +56,8 @@ public class ServerUnitTests {
 
 	@Test
 	public void testReadUsers() throws Exception {
-		User createdUser1 = new User(-1, "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
-		User createdUser2 = new User(-1, "ralph", "Jones", "pass4321", "test2@test2.com", 2, 19);
+		User createdUser1 = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
+		User createdUser2 = new User(-1, "JAlph22", "ralph", "Jones", "pass4321", "test2@test2.com", 2, 19);
 		db.getUserDAO().createUser(createdUser1);
 		db.getUserDAO().createUser(createdUser2);
 		List<User> gotUsers = db.getUserDAO().readUsers();
@@ -78,7 +78,7 @@ public class ServerUnitTests {
 
 	@Test
 	public void testUpdateUser() throws Exception {
-		User createdUser = new User(-1, "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
+		User createdUser = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
 		db.getUserDAO().createUser(createdUser);
 		createdUser.setFirstName("Joseph");
 		createdUser.setLastName("Mars");
@@ -98,7 +98,7 @@ public class ServerUnitTests {
 
 	@Test
 	public void testDeleteUser() throws Exception {
-		User createdUser = new User(-1, "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
+		User createdUser = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
 		db.getUserDAO().createUser(createdUser);
 		db.getUserDAO().deleteUser(createdUser.getUserId());
 		User gotUser = db.getUserDAO().readUser(createdUser.getUserId());

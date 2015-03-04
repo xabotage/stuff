@@ -1,5 +1,9 @@
 package shared.model;
 
+import org.w3c.dom.*;
+
+import server.database.DataImporter;
+
 /**
  * Model class for a user of the indexer program
  * @author phelpsdb
@@ -10,9 +14,10 @@ public class User {
 	public User() {
 	}
 	
-	public User(int id, String firstName, String lastName, String password, String email,
+	public User(int id, String userName, String firstName, String lastName, String password, String email,
 				int currentBatch, int indexedRecords) {
 		this.userId = id;
+		this.userName = userName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.password = password;
@@ -24,6 +29,10 @@ public class User {
 	 * the unique id of this user
 	 */
 	private int userId;
+	/**
+	 * The username
+	 */
+	private String userName;
 	/**
 	 * The first name of the user
 	 */
@@ -60,6 +69,20 @@ public class User {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
+	/**
+	 * @return the userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
+
+	/**
+	 * @param userName the userName to set
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	/**
 	 * @return the firstName
 	 */
@@ -131,6 +154,15 @@ public class User {
 	 */
 	public void setIndexedRecords(int indexedRecords) {
 		this.indexedRecords = indexedRecords;
+	}
+	
+	public User(Element userElement) {
+		userName = DataImporter.getValue((Element)userElement.getElementsByTagName("username").item(0));
+		firstName = DataImporter.getValue((Element)userElement.getElementsByTagName("firstname").item(0));
+		lastName = DataImporter.getValue((Element)userElement.getElementsByTagName("lastname").item(0));
+		password = DataImporter.getValue((Element)userElement.getElementsByTagName("password").item(0));
+		email = DataImporter.getValue((Element)userElement.getElementsByTagName("email").item(0));
+		indexedRecords = Integer.parseInt(DataImporter.getValue((Element)userElement.getElementsByTagName("email").item(0)));
 	}
 	
 }

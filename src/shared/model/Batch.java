@@ -1,7 +1,11 @@
 package shared.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.w3c.dom.*;
+
+import server.database.DataImporter;
 import shared.model.Record;
 
 /**
@@ -118,5 +122,15 @@ public class Batch {
 		this.imageFile = imageFile;
 		this.isIndexed = isIndexed;
 		this.assignedUser = assignedUser;
+	}
+	
+	public Batch(Element batchElement) {
+		imageFile = DataImporter.getValue((Element)batchElement.getElementsByTagName("file").item(0));
+		Element recordsRootElement = (Element)batchElement.getElementsByTagName("records").item(0);
+		NodeList recordElements = recordsRootElement.getElementsByTagName("record");
+		records = new ArrayList<Record>();
+		for(int i = 0; i < recordElements.getLength(); i++) {
+			records.add(new Record((Element)recordElements.item(i)));
+		}
 	}
 }

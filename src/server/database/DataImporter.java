@@ -1,7 +1,6 @@
 package server.database;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,11 +13,13 @@ public class DataImporter {
 	public static IndexerData importDataFromFile(String filename) {
 		File xmlFile = new File(filename);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		Document doc;
 		try {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
-		} catch(IOException e) {
-			System.out.printf("Could not load xml: %s", e.printStackTrace());
+			doc = dBuilder.parse(xmlFile);
+		} catch(Exception e) {
+			System.out.println("Error: could not load xml");
+			e.printStackTrace();
 			return null;
 		}
 		doc.getDocumentElement().normalize();

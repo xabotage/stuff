@@ -1,5 +1,9 @@
 package shared.model;
 
+import org.w3c.dom.*;
+
+import server.database.DataImporter;
+
 /**
  * Model class for the value of a field in a record
  * @author phelpsdb
@@ -69,6 +73,13 @@ public class FieldValue {
 	 */
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	public FieldValue() {
+	}
+	
+	public FieldValue(Element fvElement) {
+		value = DataImporter.getValue(fvElement);
 	}
 	
 }

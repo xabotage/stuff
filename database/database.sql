@@ -7,6 +7,7 @@ drop table if exists FieldValue;
 
 create table Users (
 	userId integer not null primary key autoincrement,
+	userName varchar(255) not null,
 	firstName varchar(255) not null,
 	lastName varchar(255) not null,
 	password varchar(255) not null,

@@ -14,7 +14,7 @@ public class IndexerData {
 	public IndexerData(Element rootElement) {
 		users = new ArrayList<User>();
 		projects = new ArrayList<Project>();
-		ArrayList<Element> rootElements = DataImporter.getChildElements(root);
+		ArrayList<Element> rootElements = DataImporter.getChildElements(rootElement);
 		ArrayList<Element> userElements =
 		DataImporter.getChildElements(rootElements.get(0));
 		for(Element userElement : userElements) {
