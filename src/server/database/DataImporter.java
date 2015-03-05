@@ -12,6 +12,7 @@ public class DataImporter {
 	
 	public static IndexerData importDataFromFile(String filename) {
 		File xmlFile = new File(filename);
+		xmlFile.getAbsolutePath();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		Document doc;
 		try {
@@ -44,6 +45,10 @@ public class DataImporter {
 		Node child = element.getFirstChild();
 		result = child.getNodeValue();
 		return result;
+	}
+	
+	public static void main(String[] args) {
+		DataImporter.importDataFromFile(args[0]);
 	}
 
 }

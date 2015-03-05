@@ -99,6 +99,16 @@ public class Controller implements IController {
 	}
 	
 	private void validateUser() {
+		try {
+			// do stuff like
+			getView().getHost();
+			getView().getPort();
+			getView().getParameterValues();
+			getView().setRequest();
+			getView().setResponse();
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void getProjects() {
