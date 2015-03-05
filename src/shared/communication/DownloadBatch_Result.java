@@ -26,5 +26,12 @@ public class DownloadBatch_Result extends Result {
 	public void setBatch(Batch batch) {
 		this.batch = batch;
 	}
+	
+	/**
+	 * Stringify the results as defined in the project spec
+	 */
+	public String toString() {
+		return "";
+	}
 
 }

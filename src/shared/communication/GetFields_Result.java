@@ -28,4 +28,12 @@ public class GetFields_Result extends Result {
 	public void setFields(List<Field> fields) {
 		this.fields = fields;
 	}
+
+	/**
+	 * Stringify the results as defined in the project spec
+	 */
+	public String toString() {
+		return "";
+	}
+
 }

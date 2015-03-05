@@ -29,4 +29,11 @@ public class GetProjects_Result extends Result {
 		this.projects = projects;
 	}
 
+	/**
+	 * Stringify the results as defined in the project spec
+	 */
+	public String toString() {
+		return "";
+	}
+
 }

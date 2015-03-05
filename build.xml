@@ -1,4 +1,5 @@
 
+
 <project name="Record Indexer" default="compile" basedir=".">
 
 	<!-- PROPERTIES -->
@@ -84,7 +85,7 @@
 	<!-- EXAMPLE: ant import -Dfile=dir1/dir2/indexer_data.xml -->
 	<target name="import" depends="compile" description="import indexer data">
 		<copy file="${empty-db-file}" tofile="${db-file}" overwrite="true"/> <!-- DELETE THIS LINE...? -->
-		<java classname="THE NAME OF YOUR DATA IMPORTER CLASS GOES HERE" fork="yes">
+		<java classname="server.database.DataImporter" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
 			</classpath>
@@ -100,7 +101,7 @@
 	<!-- If port number is omitted, run on default port. -->
 	<!-- EXAMPLE: ant server -->
 	<target name="server" depends="compile" description="run server on specified port">
-		<java classname="THE NAME OF YOUR SERVER CLASS GOES HERE" fork="yes">
+		<java classname="server.IndexerServer" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
 			</classpath>

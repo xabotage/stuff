@@ -132,5 +132,7 @@ public class Batch {
 		for(int i = 0; i < recordElements.getLength(); i++) {
 			records.add(new Record((Element)recordElements.item(i)));
 		}
+		
+		isIndexed = false;
 	}
 }

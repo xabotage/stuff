@@ -27,4 +27,11 @@ public class GetSampleImage_Result extends Result {
 		this.batch = batch;
 	}
 
+	/**
+	 * Stringify the results as defined in the project spec
+	 */
+	public String toString() {
+		return "";
+	}
+
 }
