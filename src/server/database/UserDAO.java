@@ -28,6 +28,38 @@ public class UserDAO {
 			while(rs.next()) {
 				user = new User();
 				user.setUserId(rs.getInt("userId"));
+				user.setUserName(rs.getString("userName"));
+				user.setFirstName(rs.getString("firstName"));
+				user.setLastName(rs.getString("lastName"));
+				user.setPassword(rs.getString("password"));
+				user.setEmail(rs.getString("email"));
+				user.setCurrentBatch(rs.getInt("currentBatch"));
+				user.setIndexedRecords(rs.getInt("indexedRecords"));
+			}
+		}
+		catch (SQLException e) {
+			DatabaseException serverEx = new DatabaseException(e.getMessage(), e);
+			throw serverEx;
+		}		
+		finally {
+			Database.safeClose(rs);
+			Database.safeClose(ps);
+		}
+		return user;
+	}
+
+	public User readUserWithName(String userName) throws DatabaseException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		User user = null;
+		try {
+			String getUserSQL = "SELECT * FROM Users where userName = ?";
+			ps = db.getConnection().prepareStatement(getUserSQL);
+			ps.setString(1, userName);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				user = new User();
+				user.setUserId(rs.getInt("userId"));
 				user.setFirstName(rs.getString("firstName"));
 				user.setLastName(rs.getString("lastName"));
 				user.setPassword(rs.getString("password"));

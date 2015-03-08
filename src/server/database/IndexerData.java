@@ -11,12 +11,14 @@ public class IndexerData {
 	private List<User> users;
 	private List<Project> projects;
 	private Database db;
+	private List<Field> currentProjectFields;
 	
 	public IndexerData(Element rootElement) throws DatabaseException {
 		Database.initialize();
 		db = new Database();
 		users = new ArrayList<User>();
 		projects = new ArrayList<Project>();
+		currentProjectFields = new ArrayList<Field>();
 		ArrayList<Element> rootElements = DataImporter.getChildElements(rootElement);
 		ArrayList<Element> userElements =
 		DataImporter.getChildElements(rootElements.get(0));
@@ -32,7 +34,24 @@ public class IndexerData {
 	public void populateDatabase() throws DatabaseException {
 		for(Project p : projects) {
 			db.getProjectDAO().createProject(p);
+			createFieldsForProject(p);
 			createBatchesForProject(p);
+		}
+		createUsers();
+	}
+	
+	private void createUsers() throws DatabaseException {
+		for(User u : users) {
+			db.getUserDAO().createUser(u);
+		}
+	}
+	
+	private void createFieldsForProject(Project p) throws DatabaseException {
+		currentProjectFields = new ArrayList<Field>();
+		for(Field f : p.getFields()) {
+			f.setProjectId(p.getProjectId());
+			db.getFieldDAO().createField(f);
+			currentProjectFields.add(f);
 		}
 	}
 	
@@ -52,11 +71,16 @@ public class IndexerData {
 		}
 	}
 	
-	private void createFieldValuesForRecord(Record r) {
+	private void createFieldValuesForRecord(Record r) throws DatabaseException {
+		int i = 0;
 		for(FieldValue fv : r.getFieldValues()) {
 			fv.setRecordId(r.getRecordId());
-			fv.setValueId();
+			fv.setFieldId(r.getFieldValues().get(i).getFieldId());
+			// we're definitely making some sort of dumb assumption here 
+			// double check that fv and field match
+			//assert(?);
 			db.getFieldValueDAO().createFieldValue(fv);
+			i++;
 		}
 	}
 

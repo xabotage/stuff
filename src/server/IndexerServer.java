@@ -111,8 +111,15 @@ public class IndexerServer extends HttpServer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		int portNo = 8989;
+		int numOfConnections = 3;
+		try {
+			HttpServer iServe = IndexerServer.create(new InetSocketAddress(8989), numOfConnections);
+			iServe.setExecutor(null);
+			iServe.createContext("/validateUser", vuHandler);
+		} catch(IOException e) {
+			System.out.println("Failed to initialize server");
+		}
 	}
 
 }

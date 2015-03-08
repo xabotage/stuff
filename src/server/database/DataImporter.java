@@ -10,7 +10,7 @@ import org.w3c.dom.*;
 
 public class DataImporter {
 	
-	public static IndexerData importDataFromFile(String filename) {
+	public static IndexerData importDataFromFile(String filename) throws DatabaseException {
 		File xmlFile = new File(filename);
 		xmlFile.getAbsolutePath();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -48,7 +48,12 @@ public class DataImporter {
 	}
 	
 	public static void main(String[] args) {
-		DataImporter.importDataFromFile(args[0]);
+		try {
+			DataImporter.importDataFromFile(args[0]);
+		} catch(DatabaseException e) {
+			System.out.println("Error: failed to import data from file");
+			e.printStackTrace();
+		}
 	}
 
 }
