@@ -47,6 +47,38 @@ public class FieldDAO {
 		return field;
 	}
 
+	public List<Field> readFields() throws DatabaseException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Field> fields = new ArrayList<Field>();
+		Field field;
+		try {
+			String getFieldSQL = "SELECT * FROM Field";
+			ps = db.getConnection().prepareStatement(getFieldSQL);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				field = new Field();
+				field.setFieldId(rs.getInt("fieldId"));
+				field.setHelpUrl(rs.getString("helpUrl"));
+				field.setKnownData(rs.getString("knownData"));
+				field.setProjectId(rs.getInt("projectId"));
+				field.setTitle(rs.getString("title"));
+				field.setxCoord(rs.getInt("xCoord"));
+				field.setWidth(rs.getInt("width"));
+				fields.add(field);
+			}
+		}
+		catch (SQLException e) {
+			DatabaseException serverEx = new DatabaseException(e.getMessage(), e);
+			throw serverEx;
+		}		
+		finally {
+			Database.safeClose(rs);
+			Database.safeClose(ps);
+		}
+		return fields;
+	}
+
 	public List<Field> readFieldsForProject(int fieldId) throws DatabaseException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;

@@ -163,6 +163,7 @@ public class User {
 		password = DataImporter.getValue((Element)userElement.getElementsByTagName("password").item(0));
 		email = DataImporter.getValue((Element)userElement.getElementsByTagName("email").item(0));
 		indexedRecords = Integer.parseInt(DataImporter.getValue((Element)userElement.getElementsByTagName("indexedrecords").item(0)));
+		currentBatch = -1;
 	}
 	
 }
