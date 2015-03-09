@@ -5,7 +5,7 @@ package shared.communication;
  * @author phelpsdb
  *
  */
-public class GetSampleImage_Params {
+public class GetSampleImage_Params extends Params {
 	/**
 	 * The id of the project to retrieve a sample image from
 	 */

@@ -2,7 +2,13 @@ package servertester.controllers;
 
 import java.util.*;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import client.communication.ClientCommunicator;
+
 import servertester.views.*;
+import shared.communication.ValidateUser_Params;
 
 public class Controller implements IController {
 
@@ -100,33 +106,114 @@ public class Controller implements IController {
 	
 	private void validateUser() {
 		try {
-			// do stuff like
-			getView().getHost();
-			getView().getPort();
-			getView().getParameterValues();
-			getView().setRequest("");
-			getView().setResponse("");
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
 		}
 	}
 	
 	private void getProjects() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void getSampleImage() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void downloadBatch() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void getFields() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void submitBatch() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 	
 	private void search() {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
+														   Integer.parseInt(getView().getPort()));
+			String[] rawParams = getView().getParameterValues();
+			ValidateUser_Params params = new ValidateUser_Params();
+			params.setUserName(rawParams[0]);
+			params.setPassword(rawParams[1]);
+			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			getView().setResponse(cu.validateUser(params).toString());
+			
+		} catch (Exception e) {
+			getView().setResponse("FAILED");
+		}
 	}
 
 }

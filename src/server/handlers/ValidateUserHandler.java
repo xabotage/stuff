@@ -22,9 +22,10 @@ public class ValidateUserHandler implements HttpHandler {
 	public void handle(HttpExchange exchange) throws IOException {
 		
 		ValidateUser_Params params = (ValidateUser_Params)xmlStream.fromXML(exchange.getRequestBody());
+		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
 		
 		try {
-			ServerFacade.validateUser(params.getUser());
+			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":"));
 		}
 		catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

@@ -7,7 +7,7 @@ import shared.model.*;
  * @author phelpsdb
  *
  */
-public class SubmitBatch_Params {
+public class SubmitBatch_Params extends Params {
 	/**
 	 * The batch to be submitted
 	 */

@@ -7,7 +7,7 @@ import shared.model.*;
  * @author phelpsdb
  *
  */
-public class ValidateUser_Params {
+public class ValidateUser_Params extends Params {
 	private User user;
 
 	public ValidateUser_Params() {

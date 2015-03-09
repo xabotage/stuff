@@ -7,7 +7,7 @@ import shared.model.*;
  * @author phelpsdb
  *
  */
-public class DownloadBatch_Params {
+public class DownloadBatch_Params extends Params {
 	/**
 	 * The id of the project in which a project will be found 
 	 */

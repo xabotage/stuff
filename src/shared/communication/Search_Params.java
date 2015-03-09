@@ -7,7 +7,7 @@ import java.util.List;
  * @author phelpsdb
  *
  */
-public class Search_Params {
+public class Search_Params extends Params {
 	/**
 	 * The string value to be searched for
 	 */

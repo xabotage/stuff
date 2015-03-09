@@ -5,7 +5,7 @@ package shared.communication;
  * @author phelpsdb
  *
  */
-public class GetProjects_Params {
+public class GetProjects_Params extends Params {
 	public GetProjects_Params() {
 	}
 }

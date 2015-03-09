@@ -5,7 +5,7 @@ package shared.communication;
  * @author phelpsdb
  *
  */
-public class GetFields_Params {
+public class GetFields_Params extends Params {
 	/**
 	 * The id of the project for the fields being retrieved
 	 */

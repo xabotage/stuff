@@ -16,9 +16,6 @@ import client.ClientException;
  *
  */
 public class ClientCommunicator {
-	private static final String SERVER_HOST = "localhost";
-	private static final int SERVER_PORT = 8989;
-	private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
 	private static final String HTTP_GET = "GET";
 	private static final String HTTP_POST = "POST";
 
@@ -49,7 +46,7 @@ public class ClientCommunicator {
 	 * @return a result object containing the projects
 	 */
 	public GetProjects_Result getProjects(GetProjects_Params params) throws ClientException {
-		return (GetProjects_Result) get("/getProjects");
+		return (GetProjects_Result) get("/getProjects", params);
 	}
 
 	/**
@@ -111,16 +108,17 @@ public class ClientCommunicator {
 	 * @param data The _Params object to send to the server
 	 * @return the result object of the transaction
 	 */
-	public Object post(String urlPath, Object data) throws ClientException {
+	public Object post(String urlPath, Params params) throws ClientException {
 		try {
 			XStream xstream = new XStream(new DomDriver());
 			URL url = new URL(urlBase + urlPath); 
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			conn.setRequestMethod(HTTP_POST);
+			conn.addRequestProperty("authorization", params.getUserName() + ":" + params.getPassword());
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.connect();
-			xstream.toXML(data, conn.getOutputStream());
+			xstream.toXML(params, conn.getOutputStream());
 			conn.getOutputStream().close();
 			if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				Object result = xstream.fromXML(conn.getInputStream());
@@ -139,12 +137,13 @@ public class ClientCommunicator {
 	 * @param data The _Params object to send to the server
 	 * @return the result object of the transaction
 	 */
-	public Object get(String urlPath) throws ClientException {
+	public Object get(String urlPath, Params params) throws ClientException {
 		try {
 			XStream xstream = new XStream(new DomDriver());
 			URL url = new URL(urlBase + urlPath); // TODO: urlBase should be set by this class's constructor and should have http://stuff.com:8080
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-			conn.setRequestMethod(HTTP_POST);
+			conn.setRequestMethod(HTTP_GET);
+			conn.addRequestProperty("authorization", params.getUserName() + ":" + params.getPassword());
 			conn.setDoInput(true);
 			conn.connect();
 			if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {

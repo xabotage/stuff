@@ -1,125 +1,93 @@
-/**
- * 
- */
 package server;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
+import java.io.*;
+import java.net.*;
+import java.util.logging.*;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.*;
 
-/**
- * @author phelpsdb
- *
- */
-public class IndexerServer extends HttpServer {
+import server.*;
 
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#bind(java.net.InetSocketAddress, int)
-	 */
-	@Override
-	public void bind(InetSocketAddress arg0, int arg1) throws IOException {
-		// TODO Auto-generated method stub
+public class IndexerServer {
 
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#createContext(java.lang.String)
-	 */
-	@Override
-	public HttpContext createContext(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#createContext(java.lang.String, com.sun.net.httpserver.HttpHandler)
-	 */
-	@Override
-	public HttpContext createContext(String arg0, HttpHandler arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#getAddress()
-	 */
-	@Override
-	public InetSocketAddress getAddress() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#getExecutor()
-	 */
-	@Override
-	public Executor getExecutor() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#removeContext(java.lang.String)
-	 */
-	@Override
-	public void removeContext(String arg0) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#removeContext(com.sun.net.httpserver.HttpContext)
-	 */
-	@Override
-	public void removeContext(HttpContext arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#setExecutor(java.util.concurrent.Executor)
-	 */
-	@Override
-	public void setExecutor(Executor arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#start()
-	 */
-	@Override
-	public void start() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sun.net.httpserver.HttpServer#stop(int)
-	 */
-	@Override
-	public void stop(int arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		int portNo = 8989;
-		int numOfConnections = 3;
+	private static final int SERVER_PORT_NUMBER = 8989;
+	private static final int MAX_WAITING_CONNECTIONS = 10;
+	
+	private static Logger logger;
+	
+	static {
 		try {
-			HttpServer iServe = IndexerServer.create(new InetSocketAddress(8989), numOfConnections);
-			iServe.setExecutor(null);
-			iServe.createContext("/validateUser", vuHandler);
-		} catch(IOException e) {
-			System.out.println("Failed to initialize server");
+			initLog();
 		}
+		catch (IOException e) {
+			System.out.println("Could not initialize log: " + e.getMessage());
+		}
+	}
+	
+	private static void initLog() throws IOException {
+		
+		Level logLevel = Level.FINE;
+		
+		logger = Logger.getLogger("indexer"); 
+		logger.setLevel(logLevel);
+		logger.setUseParentHandlers(false);
+		
+		Handler consoleHandler = new ConsoleHandler();
+		consoleHandler.setLevel(logLevel);
+		consoleHandler.setFormatter(new SimpleFormatter());
+		logger.addHandler(consoleHandler);
+
+		FileHandler fileHandler = new FileHandler("log.txt", false);
+		fileHandler.setLevel(logLevel);
+		fileHandler.setFormatter(new SimpleFormatter());
+		logger.addHandler(fileHandler);
+	}
+
+	
+	private HttpServer server;
+	
+	private IndexerServer() {
+		return;
+	}
+	
+	private void run() {
+		
+		logger.info("Initializing Model");
+		
+		try {
+			ServerFacade.initialize();		
+		}
+		catch (ServerException e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			return;
+		}
+		
+		logger.info("Initializing HTTP Server");
+		
+		try {
+			server = HttpServer.create(new InetSocketAddress(SERVER_PORT_NUMBER),
+											MAX_WAITING_CONNECTIONS);
+		} 
+		catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);			
+			return;
+		}
+
+		server.setExecutor(null); // use the default executor
+		
+		server.createContext("/validateUser", vuHandler);
+		server.createContext("/downloadBatch", dbHandler);
+		
+		logger.info("Starting HTTP Server");
+
+		server.start();
+	}
+
+	private HttpHandler vuHandler = new ValidateUserHandler();
+	private HttpHandler dbHandler = new DownloadBatchHandler();
+	
+	public static void main(String[] args) {
+		new IndexerServer().run();
 	}
 
 }
