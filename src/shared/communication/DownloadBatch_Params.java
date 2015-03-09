@@ -1,31 +1,51 @@
 package shared.communication;
 
+import shared.model.*;
+
 /**
- * Parameter object class for downloading a batch
+ * Parameter object class for downloading a project
  * @author phelpsdb
  *
  */
 public class DownloadBatch_Params {
 	/**
-	 * The id of the batch to download
+	 * The id of the project in which a project will be found 
 	 */
-	private int batchId;
+	private int projectId;
+	/**
+	 * The user to whom the batch should be assigned
+	 */
+	private User user;
 
 	public DownloadBatch_Params() {
-		batchId = -1;
+		projectId = -1;
 	}
 
 	/**
-	 * @return batchId
+	 * @return projectId
 	 */
-	public int getBatchId() {
-		return batchId;
+	public int getProjectId() {
+		return projectId;
 	}
 
 	/**
-	 * @param batchId batchId to set
+	 * @param projectId projectId to set
 	 */
-	public void setBatchId(int batchId) {
-		this.batchId = batchId;
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
+	/**
+	 * @return the user
+	 */
+	public User getUser() {
+		return user;
+	}
+
+	/**
+	 * @param user the user to set
+	 */
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

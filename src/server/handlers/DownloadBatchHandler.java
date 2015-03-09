@@ -24,7 +24,7 @@ public class DownloadBatchHandler implements HttpHandler {
 		DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
 		Batch gotBatch;
 		try {
-			gotBatch = ServerFacade.downloadBatch(params.getBatchId());
+			gotBatch = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
 		}
 		catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

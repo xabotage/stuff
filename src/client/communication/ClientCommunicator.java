@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import shared.communication.*;
+import client.ClientException;
 
 /**
  * Communicator class for the client
@@ -15,6 +16,12 @@ import shared.communication.*;
  *
  */
 public class ClientCommunicator {
+	private static final String SERVER_HOST = "localhost";
+	private static final int SERVER_PORT = 8989;
+	private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
+	private static final String HTTP_GET = "GET";
+	private static final String HTTP_POST = "POST";
+
 	/**
 	 * The domain name, port, and framework. 'http://stuff.com:8080/'
 	 */
@@ -24,7 +31,7 @@ public class ClientCommunicator {
 	}
 	
 	public ClientCommunicator(String domainHost, int port) {
-		this.urlBase = domainHost + ":" + Integer.toString(port);
+		this.urlBase = "http://" + domainHost + ":" + Integer.toString(port);
 	}
 
 	/**
@@ -32,8 +39,8 @@ public class ClientCommunicator {
 	 * @param params Object containing user credentials
 	 * @return the result of the query
 	 */
-	public ValidateUser_Result validateUser(ValidateUser_Params params) {
-		return null;
+	public ValidateUser_Result validateUser(ValidateUser_Params params) throws ClientException {
+		return (ValidateUser_Result) post("/validateUser", params);
 	}
 
 	/**
@@ -41,8 +48,8 @@ public class ClientCommunicator {
 	 * @param params parameters for querying all projects
 	 * @return a result object containing the projects
 	 */
-	public GetProjects_Result getProjects(GetProjects_Params params) {
-		return null;
+	public GetProjects_Result getProjects(GetProjects_Params params) throws ClientException {
+		return (GetProjects_Result) get("/getProjects");
 	}
 
 	/**
@@ -50,8 +57,8 @@ public class ClientCommunicator {
 	 * @param params parameter object
 	 * @return result object containing retrieved image
 	 */
-	public GetSampleImage_Result getSampleImage(GetSampleImage_Params params) {
-		return null;
+	public GetSampleImage_Result getSampleImage(GetSampleImage_Params params) throws ClientException {
+		return (GetSampleImage_Result) post("/getSampleImage", params);
 	}
 
 	/**
@@ -59,8 +66,8 @@ public class ClientCommunicator {
 	 * @param params parameter object specifying which batch
 	 * @return result object containing retrieved batch
 	 */
-	public DownloadBatch_Result downloadBatch(DownloadBatch_Params params) {
-		return null;
+	public DownloadBatch_Result downloadBatch(DownloadBatch_Params params) throws ClientException {
+		return (DownloadBatch_Result) post("/downloadBatch", params);
 	}
 
 	/**
@@ -68,8 +75,8 @@ public class ClientCommunicator {
 	 * @param params parameter object containing the batch
 	 * @return result object 
 	 */
-	public SubmitBatch_Result submitBatch(SubmitBatch_Params params) {
-		return null;
+	public SubmitBatch_Result submitBatch(SubmitBatch_Params params) throws ClientException {
+		return (SubmitBatch_Result) post("/submitBatch", params);
 	}
 
 	/**
@@ -77,8 +84,8 @@ public class ClientCommunicator {
 	 * @param params parameters specifying which project to retrieve fields for
 	 * @return a result object containing the fields
 	 */
-	public GetFields_Result getFields(GetFields_Params params) {
-		return null;
+	public GetFields_Result getFields(GetFields_Params params) throws ClientException {
+		return (GetFields_Result) post("/getFields", params);
 	}
 
 	/**
@@ -86,8 +93,8 @@ public class ClientCommunicator {
 	 * @param params specifies what to search
 	 * @return the results obtained from the search
 	 */
-	public Search_Result search(Search_Params params) {
-		return null;
+	public Search_Result search(Search_Params params) throws ClientException {
+		return (Search_Result) post("/search", params);
 	}
 
 	/**
@@ -102,22 +109,53 @@ public class ClientCommunicator {
 	/**
 	 * @param urlPath A path such as '/validateUser' or '/getProjects'
 	 * @param data The _Params object to send to the server
-	 * @return
+	 * @return the result object of the transaction
 	 */
-	public Object post(String urlPath, Object data) throws IOException {
-		XStream xstream = new XStream(new DomDriver());
-		URL url = new URL(urlBase + urlPath); // TODO: urlBase should be set by this class's constructor and should have http://stuff.com:8080
-		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-		conn.setRequestMethod("POST");
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		conn.connect();
-		xstream.toXML(data, conn.getOutputStream());
-		conn.disconnect();
-		if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			Object result = xstream.fromXML(conn.getInputStream());
-			return result;
+	public Object post(String urlPath, Object data) throws ClientException {
+		try {
+			XStream xstream = new XStream(new DomDriver());
+			URL url = new URL(urlBase + urlPath); 
+			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.setRequestMethod(HTTP_POST);
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			conn.connect();
+			xstream.toXML(data, conn.getOutputStream());
+			conn.getOutputStream().close();
+			if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				Object result = xstream.fromXML(conn.getInputStream());
+				return result;
+			} else {
+				throw new ClientException(String.format("post failed: %s (http code %d)",
+						urlPath, conn.getResponseCode()));
+			}
+		} catch(IOException e) {
+			throw new ClientException(String.format("post failed: %s", e.getMessage()), e);
 		}
-		return null;
+	}
+	
+	/**
+	 * @param urlPath A path such as '/validateUser' or '/getProjects'
+	 * @param data The _Params object to send to the server
+	 * @return the result object of the transaction
+	 */
+	public Object get(String urlPath) throws ClientException {
+		try {
+			XStream xstream = new XStream(new DomDriver());
+			URL url = new URL(urlBase + urlPath); // TODO: urlBase should be set by this class's constructor and should have http://stuff.com:8080
+			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.setRequestMethod(HTTP_POST);
+			conn.setDoInput(true);
+			conn.connect();
+			if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				Object result = xstream.fromXML(conn.getInputStream());
+				return result;
+			} else {
+				throw new ClientException(String.format("get failed: %s (http code %d)",
+						urlPath, conn.getResponseCode()));
+			}
+		} catch(IOException e) {
+			throw new ClientException(String.format("get failed: %s", e.getMessage()), e);
+		}
 	}
 }

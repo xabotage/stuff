@@ -22,16 +22,14 @@ public class ServerFacade {
 	public static boolean validateUser(User user) throws ServerException {
 		Database db = new Database();
 		try {
-			boolean result;
 			db.startTransaction();
 			User compareUser = db.getUserDAO().readUserWithName(user.getUserName());
 			assert(compareUser.getUserName() == user.getUserName());
 			if(compareUser.getPassword() == user.getPassword()) {
-				result = true;
+				return true;
 			} else {
-				result = false;
+				return false;
 			}
-			return result;
 		}
 		catch (DatabaseException e) {
 			db.endTransaction(false);
@@ -142,59 +140,20 @@ public class ServerFacade {
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			List<FieldValue> matches = db.getFieldValueDAO().findValuesOfFieldsMatching(values, fields);
+			List<FieldValue> matches = db.getFieldValueDAO().findMatchingValuesOfFields(values, fields);
 			Record r;
 			Batch b;
 			List<SearchResultObject> searchResults = new ArrayList<SearchResultObject>();
+			SearchResultObject sro;
 			for(FieldValue m : matches) {
-				r = db.getRecordDAO().readRecord(m.getRecordId());
+				sro = new SearchResultObject();
+				r = db.getRecordDAO().readRecordsForBatch(m.getRecordId());
 				b = db.getBatchDAO().readBatch(r.getBatchId());
+				sro.setBatchId(b.getBatchId());
+				sro.setImageUrl(new URL(b.getImageFile()));
+				sro.setFieldValueId(m.getValueId());
+				sro.setRecordNumber(r.getRecordNumber());
 			}
-			db.endTransaction(true);
-		}
-		catch (DatabaseException e) {
-			db.endTransaction(false);
-			throw new ServerException(e.getMessage(), e);
-		}
-	}
-
-	public static void addContact(Contact contact) throws ServerException {
-
-		Database db = new Database();
-		
-		try {
-			db.startTransaction();
-			db.getContactsDAO().add(contact);
-			db.endTransaction(true);
-		}
-		catch (DatabaseException e) {
-			db.endTransaction(false);
-			throw new ServerException(e.getMessage(), e);
-		}
-	}
-	
-	public static void updateContact(Contact contact) throws ServerException {
-
-		Database db = new Database();
-		
-		try {
-			db.startTransaction();
-			db.getContactsDAO().update(contact);
-			db.endTransaction(true);
-		}
-		catch (DatabaseException e) {
-			db.endTransaction(false);
-			throw new ServerException(e.getMessage(), e);
-		}
-	}
-	
-	public static void deleteContact(Contact contact) throws ServerException {
-
-		Database db = new Database();
-		
-		try {
-			db.startTransaction();
-			db.getContactsDAO().delete(contact);
 			db.endTransaction(true);
 		}
 		catch (DatabaseException e) {
