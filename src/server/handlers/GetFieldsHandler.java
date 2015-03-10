@@ -2,6 +2,7 @@ package server.handlers;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
 import java.util.logging.*;
 
 import com.sun.net.httpserver.*;
@@ -14,7 +15,7 @@ import server.AuthException;
 import server.ServerException;
 import server.ServerFacade;
 
-public class DownloadBatchHandler implements HttpHandler {
+public class GetFieldsHandler implements HttpHandler {
 
 	private Logger logger = Logger.getLogger("indexer"); 
 	
@@ -22,14 +23,15 @@ public class DownloadBatchHandler implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
-		DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
+		
+		GetFields_Params params = (GetFields_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
-		Batch gotBatch;
+		List<Field> fields = null;
+		
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
-			gotBatch = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
-		}
-		catch (ServerException e) {
+			fields = ServerFacade.getFields(params.getProjectId());
+		} catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
@@ -39,10 +41,9 @@ public class DownloadBatchHandler implements HttpHandler {
 			return;
 		}
 		
-		DownloadBatch_Result result = new DownloadBatch_Result();
-		result.setBatch(gotBatch);
-		
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+		GetFields_Result result = new GetFields_Result();
+		result.setFields(fields);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

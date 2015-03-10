@@ -1,6 +1,6 @@
 package shared.communication;
 
-import shared.model.Batch;
+import java.net.URL;
 
 /**
  * Communication result class for retrieving a sample image
@@ -9,29 +9,29 @@ import shared.model.Batch;
  */
 public class GetSampleImage_Result extends Result {
 	/**
-	 * The batch obtained from the server
+	 * The image URL obtained from the server
 	 */
-	private Batch batch;
+	private URL imageUrl;
 
 	/**
-	 * @return the batch
+	 * @return the imageUrl
 	 */
-	public Batch getBatch() {
-		return batch;
+	public URL getImageUrl() {
+		return imageUrl;
 	}
 
 	/**
-	 * @param batch the batch to set
+	 * @param imageUrl the imageUrl to set
 	 */
-	public void setBatch(Batch batch) {
-		this.batch = batch;
+	public void setImageUrl(URL imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	/**
 	 * Stringify the results as defined in the project spec
 	 */
 	public String toString() {
-		return "";
+		return imageUrl.toString();
 	}
 
 }

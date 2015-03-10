@@ -2,6 +2,7 @@ package server.handlers;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.*;
 
 import com.sun.net.httpserver.*;
@@ -9,12 +10,11 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import shared.communication.*;
-import shared.model.*;
 import server.AuthException;
 import server.ServerException;
 import server.ServerFacade;
 
-public class DownloadBatchHandler implements HttpHandler {
+public class GetSampleImageHandler implements HttpHandler {
 
 	private Logger logger = Logger.getLogger("indexer"); 
 	
@@ -22,14 +22,15 @@ public class DownloadBatchHandler implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
-		DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
+		
+		GetSampleImage_Params params = (GetSampleImage_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
-		Batch gotBatch;
+		URL sampleImageUrl = null;
+		
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
-			gotBatch = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
-		}
-		catch (ServerException e) {
+			sampleImageUrl = ServerFacade.getSampleImage(params.getProjectId());
+		} catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
@@ -39,10 +40,9 @@ public class DownloadBatchHandler implements HttpHandler {
 			return;
 		}
 		
-		DownloadBatch_Result result = new DownloadBatch_Result();
-		result.setBatch(gotBatch);
-		
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+		GetSampleImage_Result result = new GetSampleImage_Result();
+		result.setImageUrl(sampleImageUrl);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

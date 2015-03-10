@@ -19,16 +19,16 @@ public class ServerFacade {
 		}		
 	}
 	
-	public static boolean validateUser(User user) throws ServerException {
+	public static boolean validateUser(String userName, String password) throws ServerException, AuthException {
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			User compareUser = db.getUserDAO().readUserWithName(user.getUserName());
-			assert(compareUser.getUserName() == user.getUserName());
-			if(compareUser.getPassword() == user.getPassword()) {
+			User compareUser = db.getUserDAO().readUserWithName(userName);
+			assert(compareUser.getUserName() == userName);
+			if(compareUser.getPassword() == password) {
 				return true;
 			} else {
-				return false;
+				throw new AuthException("User credentials invalid");
 			}
 		}
 		catch (DatabaseException e) {
@@ -116,6 +116,7 @@ public class ServerFacade {
 	}
 
 	public static void submitBatch(User user, Batch batch) throws ServerException {	
+		// TODO: clear out old records for the batch, then fill in the new ones?
 		Database db = new Database();
 		try {
 			db.startTransaction();
