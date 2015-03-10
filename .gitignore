@@ -1,5 +1,8 @@
 bin/
+build/
 .project
 .classpath
 project1.iml
 .idea/
+log.txt*
+projectData/

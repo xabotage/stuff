@@ -36,16 +36,18 @@ public class ValidateUser_Result extends Result {
 		if(user == null) {
 			result.append("FALSE");
 			result.append('\n');
+			return result.toString();
+		} else {
+			result.append("TRUE");
+			result.append('\n');
+			result.append(user.getFirstName());
+			result.append('\n');
+			result.append(user.getLastName());
+			result.append('\n');
+			result.append(user.getIndexedRecords());
+			result.append('\n');
+			return result.toString();
 		}
-		result.append("TRUE");
-		result.append('\n');
-		result.append(user.getFirstName());
-		result.append('\n');
-		result.append(user.getLastName());
-		result.append('\n');
-		result.append(user.getIndexedRecords());
-		result.append('\n');
-		return result.toString();
 	}
 
 }

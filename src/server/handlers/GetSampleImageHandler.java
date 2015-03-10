@@ -2,7 +2,6 @@ package server.handlers;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.logging.*;
 
 import com.sun.net.httpserver.*;
@@ -25,7 +24,7 @@ public class GetSampleImageHandler implements HttpHandler {
 		
 		GetSampleImage_Params params = (GetSampleImage_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
-		URL sampleImageUrl = null;
+		String sampleImageUrl = null;
 		
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
@@ -42,7 +41,7 @@ public class GetSampleImageHandler implements HttpHandler {
 		
 		GetSampleImage_Result result = new GetSampleImage_Result();
 		result.setImageUrl(sampleImageUrl);
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

@@ -48,7 +48,6 @@ create table FieldValue (
 create table Field (
 	fieldId integer not null primary key autoincrement,
 	projectId integer not null,
-	fieldNum integer not null,
 	title varchar(255),
 	xCoord integer,
 	width integer,

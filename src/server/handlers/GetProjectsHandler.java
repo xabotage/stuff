@@ -43,7 +43,7 @@ public class GetProjectsHandler implements HttpHandler {
 		
 		GetProjects_Result result = new GetProjects_Result();
 		result.setProjects(projects);
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

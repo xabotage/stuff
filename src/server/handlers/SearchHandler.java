@@ -43,7 +43,7 @@ public class SearchHandler implements HttpHandler {
 		
 		Search_Result result = new Search_Result();
 		result.setSearchResults(searchResults);
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

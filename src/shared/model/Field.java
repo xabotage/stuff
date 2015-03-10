@@ -129,10 +129,12 @@ public class Field {
 	
 	public Field(Element fieldElement) {
 		title = DataImporter.getValue((Element)fieldElement.getElementsByTagName("title").item(0));
-		xCoord = Integer.parseInt(DataImporter.getValue((Element)fieldElement.getElementsByTagName("xCoord").item(0)));
+		xCoord = Integer.parseInt(DataImporter.getValue((Element)fieldElement.getElementsByTagName("xcoord").item(0)));
 		width = Integer.parseInt(DataImporter.getValue((Element)fieldElement.getElementsByTagName("width").item(0)));
 		helpUrl = DataImporter.getValue((Element)fieldElement.getElementsByTagName("helphtml").item(0));
-		knownData = DataImporter.getValue((Element)fieldElement.getElementsByTagName("knowndata").item(0));
+		if(fieldElement.getElementsByTagName("knowndata").getLength() > 0) {
+			knownData = DataImporter.getValue((Element)fieldElement.getElementsByTagName("knowndata").item(0));
+		}
 	}
 	
 }

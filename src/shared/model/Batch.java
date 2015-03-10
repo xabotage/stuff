@@ -114,6 +114,7 @@ public class Batch {
 	
 	public Batch() {
 		batchId = -1;
+		records = new ArrayList<Record>();
 	}
 
 	public Batch(int batchId, int projectId, String imageFile, boolean isIndexed, int assignedUser) {
@@ -122,15 +123,18 @@ public class Batch {
 		this.imageFile = imageFile;
 		this.isIndexed = isIndexed;
 		this.assignedUser = assignedUser;
+		records = new ArrayList<Record>();
 	}
 	
 	public Batch(Element batchElement) {
 		imageFile = DataImporter.getValue((Element)batchElement.getElementsByTagName("file").item(0));
 		Element recordsRootElement = (Element)batchElement.getElementsByTagName("records").item(0);
-		NodeList recordElements = recordsRootElement.getElementsByTagName("record");
 		records = new ArrayList<Record>();
-		for(int i = 0; i < recordElements.getLength(); i++) {
-			records.add(new Record((Element)recordElements.item(i)));
+		if(recordsRootElement != null) {
+			NodeList recordElements = recordsRootElement.getElementsByTagName("record");
+			for(int i = 0; i < recordElements.getLength(); i++) {
+				records.add(new Record((Element)recordElements.item(i)));
+			}
 		}
 		
 		isIndexed = false;

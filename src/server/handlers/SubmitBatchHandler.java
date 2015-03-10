@@ -38,7 +38,7 @@ public class SubmitBatchHandler implements HttpHandler {
 		}
 		
 		SubmitBatch_Result result = new SubmitBatch_Result();
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

@@ -8,11 +8,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import client.communication.ClientCommunicator;
 
 import servertester.views.*;
-import shared.communication.SubmitBatch_Params;
-import shared.communication.ValidateUser_Params;
-import shared.model.Batch;
-import shared.model.FieldValue;
-import shared.model.Record;
+import shared.communication.*;
+import shared.model.*;
 
 public class Controller implements IController {
 
@@ -129,11 +126,11 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			GetProjects_Params params = new GetProjects_Params();
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.getProjects(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
@@ -145,11 +142,12 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			GetSampleImage_Params params = new GetSampleImage_Params();
+			params.setProjectId(Integer.parseInt(rawParams[2]));
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.getSampleImage(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
@@ -161,11 +159,12 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			DownloadBatch_Params params = new DownloadBatch_Params();
+			params.setProjectId(Integer.parseInt(rawParams[2]));
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.downloadBatch(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
@@ -177,11 +176,16 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			GetFields_Params params = new GetFields_Params();
+			if(rawParams[2] != "") {
+				params.setProjectId(Integer.parseInt(rawParams[2]));
+			} else {
+				params.setProjectId(-1);
+			}
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.getFields(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
@@ -231,11 +235,23 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			Search_Params params = new Search_Params();
+			
+			// set the field ids
+			List<String> fieldIdsAsStrings = new ArrayList<String>(Arrays.asList(rawParams[2].split(",")));
+			List<Integer> fieldIds = new ArrayList<Integer>();
+			for(String s : fieldIdsAsStrings) {
+				fieldIds.add(Integer.parseInt(s));
+			}
+			params.setFieldIds(fieldIds);
+			
+			// set the search values
+			List<String> searchValues = new ArrayList<String>(Arrays.asList(rawParams[3].split(",")));
+			params.setSearchValue(searchValues);
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.search(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");

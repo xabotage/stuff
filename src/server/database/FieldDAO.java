@@ -150,7 +150,6 @@ public class FieldDAO {
 			ps.setInt(4, field.getProjectId());
 			ps.setInt(5, field.getxCoord());
 			ps.setInt(6, field.getWidth());
-			ps.setInt(7, field.getFieldId());
 			if (ps.executeUpdate() == 1) {
 				Statement keyStmt = db.getConnection().createStatement();
 				keyRS = keyStmt.executeQuery("SELECT last_insert_rowid()");

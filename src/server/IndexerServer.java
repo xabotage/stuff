@@ -50,9 +50,11 @@ public class IndexerServer {
 		return;
 	}
 	
-	private void run() {
+	private void run(int portNum) {
 		
 		logger.info("Initializing Model");
+		
+		portNum = (portNum == -1) ? SERVER_PORT_NUMBER : portNum;
 		
 		try {
 			ServerFacade.initialize();		
@@ -65,7 +67,7 @@ public class IndexerServer {
 		logger.info("Initializing HTTP Server");
 		
 		try {
-			server = HttpServer.create(new InetSocketAddress(SERVER_PORT_NUMBER),
+			server = HttpServer.create(new InetSocketAddress(portNum),
 											MAX_WAITING_CONNECTIONS);
 		} 
 		catch (IOException e) {
@@ -99,7 +101,11 @@ public class IndexerServer {
 	private HttpHandler dfHandler = new DownloadFileHandler();
 	
 	public static void main(String[] args) {
-		new IndexerServer().run();
+		if(args.length > 0) {
+			new IndexerServer().run(Integer.parseInt(args[0]));
+		} else {
+			new IndexerServer().run(-1);
+		}
 	}
 
 }

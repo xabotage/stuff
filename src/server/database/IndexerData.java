@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import org.w3c.dom.*;
 
+import server.ServerException;
 import shared.model.*;
 
 
@@ -35,7 +36,7 @@ public class IndexerData {
 		}
 	}
 	
-	public void populateDatabase() throws DatabaseException {
+	public void populateDatabase() throws ServerException {
 		/*// in case we want to reset the database ourselves.
 		try {
 			Scanner scan = new Scanner(new File("./database/database.sql"));
@@ -48,8 +49,15 @@ public class IndexerData {
 			return;
 		}
 		*/
-		createProjects();
-		createUsers();
+		try {
+			db.startTransaction();
+			createProjects();
+			createUsers();
+		} catch(DatabaseException e) {
+			db.endTransaction(false);
+			throw new ServerException(e.getMessage(), e);
+		}
+		db.endTransaction(true);
 	}
 
 	public void createProjects() throws DatabaseException {

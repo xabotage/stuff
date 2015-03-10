@@ -43,7 +43,7 @@ public class GetFieldsHandler implements HttpHandler {
 		
 		GetFields_Result result = new GetFields_Result();
 		result.setFields(fields);
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

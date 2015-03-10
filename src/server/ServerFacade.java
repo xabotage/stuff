@@ -1,13 +1,19 @@
 package server;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import server.database.*;
 import shared.model.*;
 
+
 public class ServerFacade {
+	private static final String PROJECT_DATA_PATH = "projectData";
 
 	public static void initialize() throws ServerException {		
 		try {
@@ -23,8 +29,8 @@ public class ServerFacade {
 		try {
 			db.startTransaction();
 			User compareUser = db.getUserDAO().readUserWithName(userName);
-			assert(compareUser.getUserName() == userName);
-			if(compareUser.getPassword() == password) {
+			assert(compareUser.getUserName().equals(userName));
+			if(compareUser.getPassword().equals(password)) {
 				return compareUser;
 			} else {
 				throw new AuthException("User credentials invalid");
@@ -102,21 +108,17 @@ public class ServerFacade {
 		}
 	}
 
-	public static URL getSampleImage(int projectId) throws ServerException {	
+	public static String getSampleImage(int projectId) throws ServerException {	
 		Database db = new Database();
 		try {
 			db.startTransaction();
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
 			assert(batches.size() > 0);
-			URL imageUrl = new URL(batches.get(0).getImageFile());
+			String imageUrl = batches.get(0).getImageFile();
 			db.endTransaction(true);
 			return imageUrl;
 		} catch (DatabaseException e) {
 			db.endTransaction(false);
-			throw new ServerException(e.getMessage(), e);
-		} catch (MalformedURLException e) {
-			db.endTransaction(false);
-			e.printStackTrace();
 			throw new ServerException(e.getMessage(), e);
 		}
 	}
@@ -189,5 +191,15 @@ public class ServerFacade {
 			throw new ServerException(e.getMessage(), e);
 		}
 	}
+	
+	public static byte[] downloadFile(String fileURI) throws ServerException {
+		Path p = Paths.get("./" + PROJECT_DATA_PATH + fileURI);
+		try {
+			return Files.readAllBytes(p);
+		} catch(IOException e) {
+			throw new ServerException(e.getMessage(), e);
+		}
+	}
+	
 
 }

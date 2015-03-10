@@ -8,7 +8,7 @@ import java.util.logging.*;
 public class Database {
 	
 	private static final String DATABASE_DIRECTORY = "database";
-	private static final String DATABASE_FILE = "indexer_db.sqlite";
+	private static final String DATABASE_FILE = "indexer_server.sqlite";
 	private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY +
 												File.separator + DATABASE_FILE;
 
@@ -46,6 +46,9 @@ public class Database {
 		userDAO = new UserDAO(this);
 		batchDAO = new BatchDAO(this);
 		projectDAO = new ProjectDAO(this);
+		fieldDAO = new FieldDAO(this);
+		fieldValueDAO = new FieldValueDAO(this);
+		recordDAO = new RecordDAO(this);
 	}
 	
 	/**

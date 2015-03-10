@@ -1,7 +1,5 @@
 package shared.communication;
 
-import java.net.URL;
-
 /**
  * Communication result class for retrieving a sample image
  * @author phelpsdb
@@ -9,21 +7,21 @@ import java.net.URL;
  */
 public class GetSampleImage_Result extends Result {
 	/**
-	 * The image URL obtained from the server
+	 * The image String obtained from the server
 	 */
-	private URL imageUrl;
+	private String imageUrl;
 
 	/**
 	 * @return the imageUrl
 	 */
-	public URL getImageUrl() {
+	public String getImageUrl() {
 		return imageUrl;
 	}
 
 	/**
 	 * @param imageUrl the imageUrl to set
 	 */
-	public void setImageUrl(URL imageUrl) {
+	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 

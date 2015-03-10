@@ -29,6 +29,7 @@ public class RecordDAO {
 				record = new Record();
 				record.setRecordId(rs.getInt("recordId"));
 				record.setBatchId(rs.getInt("batchId"));
+				record.setRecordNum(rs.getInt("recordNum"));
 			}
 		}
 		catch (SQLException e) {
@@ -55,6 +56,7 @@ public class RecordDAO {
 				record = new Record();
 				record.setRecordId(rs.getInt("recordId"));
 				record.setBatchId(rs.getInt("batchId"));
+				record.setRecordNum(rs.getInt("recordNum"));
 				records.add(record);
 			}
 		}
@@ -72,10 +74,11 @@ public class RecordDAO {
 	public void updateRecord(Record record) throws DatabaseException {
 		PreparedStatement ps = null;
 		try {
-			String updateRecordSQL = "UPDATE Record SET batchId = ? WHERE recordId = ?";
+			String updateRecordSQL = "UPDATE Record SET batchId = ?, recordNum = ? WHERE recordId = ?";
 			ps = db.getConnection().prepareStatement(updateRecordSQL);
 			ps.setInt(1, record.getBatchId());
-			ps.setInt(2, record.getRecordId());
+			ps.setInt(2, record.getRecordNum());
+			ps.setInt(3, record.getRecordId());
 			if (ps.executeUpdate() != 1) {
 				throw new DatabaseException("Could not update record");
 			}
@@ -92,9 +95,10 @@ public class RecordDAO {
 		PreparedStatement ps = null;
 		ResultSet keyRS = null;		
 		try {
-			String createRecordSQL = "INSERT INTO Record (batchId) VALUES (?)";
+			String createRecordSQL = "INSERT INTO Record (batchId, recordNum) VALUES (?, ?)";
 			ps = db.getConnection().prepareStatement(createRecordSQL);
 			ps.setInt(1, record.getBatchId());
+			ps.setInt(2, record.getRecordNum());
 			if (ps.executeUpdate() == 1) {
 				Statement keyStmt = db.getConnection().createStatement();
 				keyRS = keyStmt.executeQuery("SELECT last_insert_rowid()");

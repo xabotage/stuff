@@ -60,6 +60,7 @@ public class UserDAO {
 			while(rs.next()) {
 				user = new User();
 				user.setUserId(rs.getInt("userId"));
+				user.setUserName(rs.getString("userName"));
 				user.setFirstName(rs.getString("firstName"));
 				user.setLastName(rs.getString("lastName"));
 				user.setPassword(rs.getString("password"));
@@ -91,6 +92,7 @@ public class UserDAO {
 			while(rs.next()) {
 				user = new User();
 				user.setUserId(rs.getInt("userId"));
+				user.setUserName(rs.getString("userName"));
 				user.setFirstName(rs.getString("firstName"));
 				user.setLastName(rs.getString("lastName"));
 				user.setPassword(rs.getString("password"));
@@ -114,16 +116,17 @@ public class UserDAO {
 	public void updateUser(User user) throws DatabaseException {
 		PreparedStatement ps = null;
 		try {
-			String updateUserSQL = "UPDATE Users SET firstName = ?, lastName = ?, password = ?, email = ?, "
+			String updateUserSQL = "UPDATE Users SET userName = ?, firstName = ?, lastName = ?, password = ?, email = ?, "
 					+ "currentBatch = ?, indexedRecords = ? WHERE userId = ?";
 			ps = db.getConnection().prepareStatement(updateUserSQL);
-			ps.setString(1, user.getFirstName());
-			ps.setString(2,  user.getLastName());
-			ps.setString(3, user.getPassword());
-			ps.setString(4, user.getEmail());
-			ps.setInt(5, user.getCurrentBatch());
-			ps.setInt(6, user.getIndexedRecords());
-			ps.setInt(7, user.getUserId());
+			ps.setString(1, user.getUserName());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3,  user.getLastName());
+			ps.setString(4, user.getPassword());
+			ps.setString(5, user.getEmail());
+			ps.setInt(6, user.getCurrentBatch());
+			ps.setInt(7, user.getIndexedRecords());
+			ps.setInt(8, user.getUserId());
 			if (ps.executeUpdate() != 1) {
 				throw new DatabaseException("Could not update user");
 			}
@@ -140,15 +143,16 @@ public class UserDAO {
 		PreparedStatement ps = null;
 		ResultSet keyRS = null;		
 		try {
-			String createUserSQL = "INSERT INTO Users (firstName, lastName, password, email, currentBatch, indexedRecords) "
-					+ "VALUES (?, ?, ?, ?, ?, ?)";
+			String createUserSQL = "INSERT INTO Users (userName, firstName, lastName, password, email, currentBatch, indexedRecords) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 			ps = db.getConnection().prepareStatement(createUserSQL);
-			ps.setString(1, user.getFirstName());
-			ps.setString(2, user.getLastName());
-			ps.setString(3, user.getPassword());
-			ps.setString(4, user.getEmail());
-			ps.setInt(5, user.getCurrentBatch());
-			ps.setInt(6, user.getIndexedRecords());
+			ps.setString(1, user.getUserName());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
+			ps.setString(4, user.getPassword());
+			ps.setString(5, user.getEmail());
+			ps.setInt(6, user.getCurrentBatch());
+			ps.setInt(7, user.getIndexedRecords());
 			if (ps.executeUpdate() == 1) {
 				Statement keyStmt = db.getConnection().createStatement();
 				keyRS = keyStmt.executeQuery("SELECT last_insert_rowid()");

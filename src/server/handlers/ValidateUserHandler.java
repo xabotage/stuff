@@ -34,14 +34,17 @@ public class ValidateUserHandler implements HttpHandler {
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
 		} catch (AuthException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
+			ValidateUser_Result result = new ValidateUser_Result();
+			result.setUser(gotUser); // returns null
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+			xmlStream.toXML(result, exchange.getResponseBody());
+			exchange.getResponseBody().close();
 			return;
 		}
 		
 		ValidateUser_Result result = new ValidateUser_Result();
 		result.setUser(gotUser);
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());
 		exchange.getResponseBody().close();
 	}

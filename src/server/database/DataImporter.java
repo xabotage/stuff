@@ -11,9 +11,11 @@ import org.apache.commons.io.FileUtils;
 
 import org.w3c.dom.*;
 
+import server.ServerException;
+
 public class DataImporter {
 	
-	public static IndexerData importDataFromFile(String filename) throws DatabaseException {
+	public static IndexerData importDataFromFile(String filename) throws ServerException {
 		File xmlFile = new File(filename);
 
 		// copy the data files
@@ -40,7 +42,12 @@ public class DataImporter {
 		}
 		doc.getDocumentElement().normalize();
 		Element root = doc.getDocumentElement();
-		return new IndexerData(root);
+		try {
+			IndexerData iData = new IndexerData(root);
+			return iData;
+		} catch(DatabaseException e) {
+			throw new ServerException(e.getMessage(), e);
+		}
 	}
 	
 	public static ArrayList<Element> getChildElements(Node node) {
@@ -66,7 +73,7 @@ public class DataImporter {
 		try {
 			IndexerData iData = DataImporter.importDataFromFile(args[0]);
 			iData.populateDatabase();
-		} catch(DatabaseException e) {
+		} catch(ServerException e) {
 			System.out.println("Error: failed to import data from file");
 			e.printStackTrace();
 		}

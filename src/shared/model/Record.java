@@ -78,6 +78,7 @@ public class Record {
 	
 	public Record() {
 		recordId = -1;
+		fieldValues = new ArrayList<FieldValue>();
 	}
 	
 	public Record(Element recordElement) {
