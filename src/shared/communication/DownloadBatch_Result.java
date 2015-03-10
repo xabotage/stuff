@@ -17,6 +17,11 @@ public class DownloadBatch_Result extends Result {
 	 * The project associated with the batch
 	 */
 	private Project project;
+	
+	/**
+	 * http://something.com:8989/
+	 */
+	private String urlBase;
 
 	/**
 	 * @return the batch
@@ -45,6 +50,10 @@ public class DownloadBatch_Result extends Result {
 	public void setProject(Project project) {
 		this.project = project;
 	}
+	
+	public DownloadBatch_Result() {
+		this.setUrlBase("");
+	}
 
 	/**
 	 * Stringify the results as defined in the project spec
@@ -52,6 +61,8 @@ public class DownloadBatch_Result extends Result {
 	public String toString() {
 		assert(project.getFields().size() > 0);
 		StringBuilder result = new StringBuilder();
+		result.append(batch.getBatchId());
+		result.append('\n');
 		result.append(batch.getProjectId());
 		result.append('\n');
 		result.append(batch.getImageFile());
@@ -73,6 +84,7 @@ public class DownloadBatch_Result extends Result {
 			result.append('\n');
 			result.append(f.getTitle());
 			result.append('\n');
+			result.append(urlBase);
 			result.append(f.getHelpUrl());
 			result.append('\n');
 			result.append(f.getxCoord());
@@ -80,12 +92,27 @@ public class DownloadBatch_Result extends Result {
 			result.append(f.getWidth());
 			result.append('\n');
 			if(f.getKnownData() != null) {
+				result.append(urlBase);
 				result.append(f.getKnownData());
 				result.append('\n');
 			}
 			x++;
 		}
 		return result.toString();
+	}
+
+	/**
+	 * @return the urlBase
+	 */
+	public String getUrlBase() {
+		return urlBase;
+	}
+
+	/**
+	 * @param urlBase the urlBase to set
+	 */
+	public void setUrlBase(String urlBase) {
+		this.urlBase = urlBase;
 	}
 
 }

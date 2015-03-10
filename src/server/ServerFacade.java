@@ -42,11 +42,11 @@ public class ServerFacade {
 		}
 	}
 	
-	public static Project downloadBatch(User user, int projectId) throws ServerException {	
+	public static Project downloadBatch(String userName, int projectId) throws ServerException {	
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			User gotUser = db.getUserDAO().readUserWithName(user.getUserName());
+			User gotUser = db.getUserDAO().readUserWithName(userName);
 			if(gotUser.getCurrentBatch() != -1) {
 				db.endTransaction(false);
 				throw new ServerException("User already has a batch assigned");

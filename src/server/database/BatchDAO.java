@@ -51,8 +51,9 @@ public class BatchDAO {
 		List<Batch> batches = new ArrayList<Batch>();
 		Batch batch;
 		try {
-			String getBatchSQL = "SELECT * FROM Batch";
+			String getBatchSQL = "SELECT * FROM Batch WHERE projectId = ?";
 			ps = db.getConnection().prepareStatement(getBatchSQL);
+			ps.setInt(1, projectId);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				batch = new Batch();

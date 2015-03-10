@@ -79,15 +79,15 @@ public class FieldDAO {
 		return fields;
 	}
 
-	public List<Field> readFieldsForProject(int fieldId) throws DatabaseException {
+	public List<Field> readFieldsForProject(int projectId) throws DatabaseException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Field> fields = new ArrayList<Field>();
 		Field field;
 		try {
-			String getFieldSQL = "SELECT * FROM Field where fieldId = ?";
+			String getFieldSQL = "SELECT * FROM Field where projectId = ?";
 			ps = db.getConnection().prepareStatement(getFieldSQL);
-			ps.setInt(1, fieldId);
+			ps.setInt(1, projectId);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				field = new Field();

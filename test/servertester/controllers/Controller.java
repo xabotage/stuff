@@ -147,7 +147,8 @@ public class Controller implements IController {
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.getSampleImage(params).toString());
+			String urlBase = "http://" + getView().getHost() + ":" + getView().getPort() + "/";
+			getView().setResponse(urlBase + cu.getSampleImage(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");
@@ -164,9 +165,12 @@ public class Controller implements IController {
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.downloadBatch(params).toString());
+			DownloadBatch_Result result = cu.downloadBatch(params);
+			result.setUrlBase("http://" + getView().getHost() + ":" + getView().getPort() + "/");
+			getView().setResponse(result.toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}

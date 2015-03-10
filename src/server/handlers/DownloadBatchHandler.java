@@ -27,7 +27,7 @@ public class DownloadBatchHandler implements HttpHandler {
 		Project gotProject;
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
-			gotProject = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
+			gotProject = ServerFacade.downloadBatch(params.getUserName(), params.getProjectId());
 		}
 		catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
