@@ -1,7 +1,11 @@
 package server.database;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 import org.w3c.dom.*;
 
 import shared.model.*;
@@ -32,12 +36,28 @@ public class IndexerData {
 	}
 	
 	public void populateDatabase() throws DatabaseException {
+		/*// in case we want to reset the database ourselves.
+		try {
+			Scanner scan = new Scanner(new File("./database/database.sql"));
+			StringBuilder stmt = new StringBuilder();
+			while(scan.hasNextLine()) {
+				stmt.append(scan.nextLine());
+			}
+		} catch(FileNotFoundException e) {
+			System.out.println("Error: could not load database initialization file");
+			return;
+		}
+		*/
+		createProjects();
+		createUsers();
+	}
+
+	public void createProjects() throws DatabaseException {
 		for(Project p : projects) {
 			db.getProjectDAO().createProject(p);
 			createFieldsForProject(p);
 			createBatchesForProject(p);
 		}
-		createUsers();
 	}
 	
 	private void createUsers() throws DatabaseException {

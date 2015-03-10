@@ -82,6 +82,7 @@ public class IndexerServer {
 		server.createContext("/getSampleImage", gsiHandler);
 		server.createContext("/search", searchHandler);
 		server.createContext("/submitBatch", sbHandler);
+		server.createContext("/", dfHandler);
 		
 		logger.info("Starting HTTP Server");
 
@@ -95,6 +96,7 @@ public class IndexerServer {
 	private HttpHandler gsiHandler = new GetSampleImageHandler();
 	private HttpHandler searchHandler = new SearchHandler();
 	private HttpHandler sbHandler = new SubmitBatchHandler();
+	private HttpHandler dfHandler = new DownloadFileHandler();
 	
 	public static void main(String[] args) {
 		new IndexerServer().run();

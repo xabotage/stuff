@@ -33,6 +33,12 @@ public class ValidateUser_Result extends Result {
 	 */
 	public String toString() {
 		StringBuilder result = new StringBuilder();
+		if(user == null) {
+			result.append("FALSE");
+			result.append('\n');
+		}
+		result.append("TRUE");
+		result.append('\n');
 		result.append(user.getFirstName());
 		result.append('\n');
 		result.append(user.getLastName());

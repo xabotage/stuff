@@ -1,10 +1,13 @@
 package server.database;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.io.FileUtils;
 
 import org.w3c.dom.*;
 
@@ -12,7 +15,19 @@ public class DataImporter {
 	
 	public static IndexerData importDataFromFile(String filename) throws DatabaseException {
 		File xmlFile = new File(filename);
-		xmlFile.getAbsolutePath();
+
+		// copy the data files
+		try {
+			File sourceDir = xmlFile.getParentFile();
+			File targetDir = new File("./projectData");
+			FileUtils.copyDirectory(sourceDir, targetDir);
+		} catch(IOException e) {
+			System.out.println("Error: could not copy directories");
+			e.printStackTrace();
+			return null;
+		}
+
+		// Parse the xml
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		Document doc;
 		try {
@@ -49,7 +64,8 @@ public class DataImporter {
 	
 	public static void main(String[] args) {
 		try {
-			DataImporter.importDataFromFile(args[0]);
+			IndexerData iData = DataImporter.importDataFromFile(args[0]);
+			iData.populateDatabase();
 		} catch(DatabaseException e) {
 			System.out.println("Error: failed to import data from file");
 			e.printStackTrace();
