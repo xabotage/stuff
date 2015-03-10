@@ -30,14 +30,14 @@ public class SearchHandler implements HttpHandler {
 		
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
-			searchResults = ServerFacade.search(params.getFields(), params.getValues());
+			searchResults = ServerFacade.search(params.getFieldIds(), params.getSearchValues());
 		} catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
 		} catch (AuthException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_FORBIDDEN, -1);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
 			return;
 		}
 		

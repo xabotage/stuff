@@ -6,7 +6,7 @@ import java.util.logging.*;
 
 import com.sun.net.httpserver.*;
 
-import server.*;
+import server.handlers.*;
 
 public class IndexerServer {
 
@@ -77,6 +77,11 @@ public class IndexerServer {
 		
 		server.createContext("/validateUser", vuHandler);
 		server.createContext("/downloadBatch", dbHandler);
+		server.createContext("/getFields", gfHandler);
+		server.createContext("/getProjects", gpHandler);
+		server.createContext("/getSampleImage", gsiHandler);
+		server.createContext("/search", searchHandler);
+		server.createContext("/submitBatch", sbHandler);
 		
 		logger.info("Starting HTTP Server");
 
@@ -85,6 +90,11 @@ public class IndexerServer {
 
 	private HttpHandler vuHandler = new ValidateUserHandler();
 	private HttpHandler dbHandler = new DownloadBatchHandler();
+	private HttpHandler gfHandler = new GetFieldsHandler();
+	private HttpHandler gpHandler = new GetProjectsHandler();
+	private HttpHandler gsiHandler = new GetSampleImageHandler();
+	private HttpHandler searchHandler = new SearchHandler();
+	private HttpHandler sbHandler = new SubmitBatchHandler();
 	
 	public static void main(String[] args) {
 		new IndexerServer().run();

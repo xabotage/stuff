@@ -11,7 +11,7 @@ public class Search_Params extends Params {
 	/**
 	 * The string value to be searched for
 	 */
-	private String searchValue;
+	private List<String> searchValues;
 
 	/**
 	 * The fields to be searched
@@ -21,15 +21,15 @@ public class Search_Params extends Params {
 	/**
 	 * @return the search value
 	 */
-	public String getSearchValue() {
-		return searchValue;
+	public List<String> getSearchValues() {
+		return searchValues;
 	}
 
 	/**
 	 * @param searchValue the new search value
 	 */
-	public void setSearchValue(String searchValue) {
-		this.searchValue = searchValue;
+	public void setSearchValue(List<String> searchValues) {
+		this.searchValues = searchValues;
 	}
 
 	/**
@@ -47,7 +47,6 @@ public class Search_Params extends Params {
 	}
 
 	public Search_Params() {
-		searchValue = null;
 	}
 
 }

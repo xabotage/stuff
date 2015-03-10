@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import shared.communication.*;
+import shared.model.User;
 import server.AuthException;
 import server.ServerException;
 import server.ServerFacade;
@@ -24,20 +25,25 @@ public class ValidateUserHandler implements HttpHandler {
 		
 		ValidateUser_Params params = (ValidateUser_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
+		User gotUser = null;
 		
 		try {
-			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
+			gotUser = ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
 		} catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
 		} catch (AuthException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_FORBIDDEN, -1);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
 			return;
 		}
 		
+		ValidateUser_Result result = new ValidateUser_Result();
+		result.setUser(gotUser);
 		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		xmlStream.toXML(result, exchange.getResponseBody());
+		exchange.getResponseBody().close();
 	}
 }
 

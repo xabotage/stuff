@@ -64,10 +64,13 @@ public class IndexerData {
 	}
 	
 	private void createRecordsForBatch(Batch b) throws DatabaseException {
+		int x = 1;
 		for(Record r : b.getRecords()) {
 			r.setBatchId(b.getBatchId());
+			r.setRecordNum(x);
 			db.getRecordDAO().createRecord(r);
 			createFieldValuesForRecord(r);
+			x++;
 		}
 	}
 	

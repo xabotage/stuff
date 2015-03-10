@@ -24,6 +24,10 @@ public class Record {
 	 */
 	private List<FieldValue> fieldValues;
 	/**
+	 * The number of this record as it appears in the batch
+	 */
+	private int recordNum;
+	/**
 	 * @return the recordId
 	 */
 	public int getRecordId() {
@@ -46,6 +50,18 @@ public class Record {
 	 */
 	public void setBatchId(int batchId) {
 		this.batchId = batchId;
+	}
+	/**
+	 * @return the recordNum
+	 */
+	public int getRecordNum() {
+		return recordNum;
+	}
+	/**
+	 * @param recordNum the recordNum to set
+	 */
+	public void setRecordNum(int recordNum) {
+		this.recordNum = recordNum;
 	}
 	/**
 	 * @return the fieldValues

@@ -4,7 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
+import server.database.DatabaseException;
 import shared.model.*;
 
 /**
@@ -50,6 +53,60 @@ public class FieldValueDAO {
 			Database.safeClose(ps);
 		}
 		return fv;
+	}
+	
+	/**
+	 * Finds field values matching the given strings
+	 * @param fieldIds The ids of the fields that must match
+	 * @param values The strings to search for
+	 * @return a list of field values that match
+	 */
+	public List<FieldValue> findMatchingValuesOfFields(List<String> values, List<Integer> fieldIds) 
+			throws DatabaseException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<FieldValue> matches = new ArrayList<FieldValue>();
+		FieldValue fv = null;
+		try {
+			StringBuilder getFieldSQLsb = new StringBuilder("SELECT * FROM FieldValue WHERE (" +
+					"fieldId = ? ");
+			for(int i = 1; i < fieldIds.size(); i++) {
+				getFieldSQLsb.append("OR fieldId = ? ");
+			}
+			getFieldSQLsb.append(") AND (value = ? ");
+			for(int j = 1; j < values.size(); j++) {
+				getFieldSQLsb.append("OR value = ? ");
+			}
+			getFieldSQLsb.append(")");
+			ps = db.getConnection().prepareStatement(getFieldSQLsb.toString());
+			int x = 1;
+			for(Integer id : fieldIds) {
+				ps.setInt(x, id);
+				x++;
+			}
+			for(String v : values) {
+				ps.setString(x, v);
+				x++;
+			}
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				fv = new FieldValue();
+				fv.setValueId(rs.getInt("valueId"));
+				fv.setFieldId(rs.getInt("fieldId"));
+				fv.setRecordId(rs.getInt("recordId"));
+				fv.setValue(rs.getString("value"));
+				matches.add(fv);
+			}
+		}
+		catch (SQLException e) {
+			DatabaseException serverEx = new DatabaseException(e.getMessage(), e);
+			throw serverEx;
+		}		
+		finally {
+			Database.safeClose(rs);
+			Database.safeClose(ps);
+		}
+		return matches;
 	}
 
 	/**

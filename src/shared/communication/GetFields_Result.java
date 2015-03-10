@@ -33,7 +33,16 @@ public class GetFields_Result extends Result {
 	 * Stringify the results as defined in the project spec
 	 */
 	public String toString() {
-		return "";
+		StringBuilder result = new StringBuilder();
+		for(Field f : fields) {
+			result.append(f.getProjectId());
+			result.append('\n');
+			result.append(f.getFieldId());
+			result.append('\n');
+			result.append(f.getTitle());
+			result.append('\n');
+		}
+		return result.toString();
 	}
 
 }

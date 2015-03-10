@@ -36,7 +36,7 @@ public class GetSampleImageHandler implements HttpHandler {
 			return;
 		} catch (AuthException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_FORBIDDEN, -1);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
 			return;
 		}
 		

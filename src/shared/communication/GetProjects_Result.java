@@ -33,7 +33,14 @@ public class GetProjects_Result extends Result {
 	 * Stringify the results as defined in the project spec
 	 */
 	public String toString() {
-		return "";
+		StringBuilder result = new StringBuilder();
+		for(Project p : projects) {
+			result.append(p.getProjectId());
+			result.append('\n');
+			result.append(p.getTitle());
+			result.append('\n');
+		}
+		return result.toString();
 	}
 
 }

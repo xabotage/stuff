@@ -8,7 +8,11 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import client.communication.ClientCommunicator;
 
 import servertester.views.*;
+import shared.communication.SubmitBatch_Params;
 import shared.communication.ValidateUser_Params;
+import shared.model.Batch;
+import shared.model.FieldValue;
+import shared.model.Record;
 
 public class Controller implements IController {
 
@@ -189,11 +193,33 @@ public class Controller implements IController {
 			ClientCommunicator cu = new ClientCommunicator(getView().getHost(), 
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
-			ValidateUser_Params params = new ValidateUser_Params();
+			SubmitBatch_Params params = new SubmitBatch_Params();
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
+			Batch b = new Batch();
+			b.setBatchId(Integer.parseInt(rawParams[2]));
+			List<Record> records = new ArrayList<Record>();
+			String[] recordStrings = rawParams[3].split(";");
+			int recordNum = 1;
+			for(String rs : recordStrings) {
+				Record record = new Record();
+				record.setRecordNum(recordNum);
+				record.setBatchId(b.getBatchId());
+				String[] valueStrings = rs.split(",");
+				List<FieldValue> fvs = new ArrayList<FieldValue>();
+				for(String vs : valueStrings) {
+					FieldValue fv = new FieldValue();
+					fv.setValue(vs);
+					fvs.add(fv);
+				}
+				record.setFieldValues(fvs);
+				records.add(record);
+				recordNum++;
+			}
+			b.setRecords(records);
+
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.validateUser(params).toString());
+			getView().setResponse(cu.submitBatch(params).toString());
 			
 		} catch (Exception e) {
 			getView().setResponse("FAILED");

@@ -29,12 +29,13 @@ create table Batch (
 	projectId integer not null,
 	imageFile varchar(255),
 	isIndexed boolean,
-	assignedUser integer
+	assignedUser integer not null
 );
 
 create table Record (
 	recordId integer not null primary key autoincrement,
-	batchId integer not null
+	batchId integer not null,
+	recordNum integer not null
 );
 
 create table FieldValue (

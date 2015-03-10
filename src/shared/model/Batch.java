@@ -134,5 +134,6 @@ public class Batch {
 		}
 		
 		isIndexed = false;
+		assignedUser = -1;
 	}
 }

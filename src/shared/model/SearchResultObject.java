@@ -6,7 +6,7 @@ public class SearchResultObject {
 	private int batchId;
 	private URL imageUrl;
 	private int recordNumber;
-	private int fieldValueId;
+	private int fieldId;
 	/**
 	 * @return the batchId
 	 */
@@ -44,16 +44,16 @@ public class SearchResultObject {
 		this.recordNumber = recordNumber;
 	}
 	/**
-	 * @return the fieldValueId
+	 * @return the fieldId
 	 */
-	public int getFieldValueId() {
-		return fieldValueId;
+	public int getFieldId() {
+		return fieldId;
 	}
 	/**
-	 * @param fieldValueId the fieldValueId to set
+	 * @param fieldId the fieldId to set
 	 */
-	public void setFieldValueId(int fieldValueId) {
-		this.fieldValueId = fieldValueId;
+	public void setFieldId(int fieldId) {
+		this.fieldId = fieldId;
 	}
 
 }

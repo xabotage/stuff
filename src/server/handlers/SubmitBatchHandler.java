@@ -22,21 +22,25 @@ public class SubmitBatchHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		
-		ValidateUser_Params params = (ValidateUser_Params)xmlStream.fromXML(exchange.getRequestBody());
+		SubmitBatch_Params params = (SubmitBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
 		
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
+			ServerFacade.submitBatch(params.getBatch(), validateAuth.split(":")[0]);
 		} catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			return;
 		} catch (AuthException e) {
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_FORBIDDEN, -1);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
 			return;
 		}
 		
+		SubmitBatch_Result result = new SubmitBatch_Result();
 		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+		xmlStream.toXML(result, exchange.getResponseBody());
+		exchange.getResponseBody().close();
 	}
 }
 

@@ -24,10 +24,10 @@ public class DownloadBatchHandler implements HttpHandler {
 	public void handle(HttpExchange exchange) throws IOException {
 		DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
 		String validateAuth = exchange.getRequestHeaders().getFirst("authorization");
-		Batch gotBatch;
+		Project gotProject;
 		try {
 			ServerFacade.validateUser(validateAuth.split(":")[0], validateAuth.split(":")[1]);
-			gotBatch = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
+			gotProject = ServerFacade.downloadBatch(params.getUser(), params.getProjectId());
 		}
 		catch (ServerException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -35,12 +35,14 @@ public class DownloadBatchHandler implements HttpHandler {
 			return;
 		} catch (AuthException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_FORBIDDEN, -1);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, -1);
 			return;
 		}
 		
 		DownloadBatch_Result result = new DownloadBatch_Result();
-		result.setBatch(gotBatch);
+		assert(gotProject.getBatches().size() == 1);
+		result.setBatch(gotProject.getBatches().get(0));
+		result.setProject(gotProject);
 		
 		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 		xmlStream.toXML(result, exchange.getResponseBody());

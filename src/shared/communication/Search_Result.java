@@ -2,6 +2,8 @@ package shared.communication;
 
 import java.util.List;
 
+import shared.model.SearchResultObject;
+
 /**
  * Result class for search function
  */
@@ -9,13 +11,13 @@ public class Search_Result extends Result {
 	/**
 	 * Results returned from the search
 	 */
-	private List<SearchResultTuple> searchResults;
+	private List<SearchResultObject> searchResults;
 	
 	
 	/**
 	 * @return the searchResults
 	 */
-	public List<SearchResultTuple> getSearchResults() {
+	public List<SearchResultObject> getSearchResults() {
 		return searchResults;
 	}
 
@@ -23,84 +25,23 @@ public class Search_Result extends Result {
 	/**
 	 * @param searchResults the searchResults to set
 	 */
-	public void setSearchResults(List<SearchResultTuple> searchResults) {
+	public void setSearchResults(List<SearchResultObject> searchResults) {
 		this.searchResults = searchResults;
 	}
-
-
-	/**
-	 * Utility class for storing the search results
-	 * @author phelpsdb
-	 *
-	 */
-	public class SearchResultTuple {
-		/**
-		 * The id of the batch where the result was found
-		 */
-		private int batchId;
-		/**
-		 * The url of the image for this batch
-		 */
-		private String imageUrl;
-		/**
-		 * The row number of this record
-		 */
-		private int recordNumber;
-		/**
-		 * The id of the field for this match
-		 */
-		private int fieldId;
-		/**
-		 * @return the batchId
-		 */
-		public int getBatchId() {
-			return batchId;
+	
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		for(SearchResultObject sro : searchResults) {
+			result.append(sro.getBatchId());
+			result.append('\n');
+			result.append(sro.getImageUrl().toString());
+			result.append('\n');
+			result.append(sro.getRecordNumber());
+			result.append('\n');
+			result.append(sro.getFieldId());
+			result.append('\n');
 		}
-		/**
-		 * @param batchId the batchId to set
-		 */
-		public void setBatchId(int batchId) {
-			this.batchId = batchId;
-		}
-		/**
-		 * @return the imageUrl
-		 */
-		public String getImageUrl() {
-			return imageUrl;
-		}
-		/**
-		 * @param imageUrl the imageUrl to set
-		 */
-		public void setImageUrl(String imageUrl) {
-			this.imageUrl = imageUrl;
-		}
-		/**
-		 * @return the recordNumber
-		 */
-		public int getRecordNumber() {
-			return recordNumber;
-		}
-		/**
-		 * @param recordNumber the recordNumber to set
-		 */
-		public void setRecordNumber(int recordNumber) {
-			this.recordNumber = recordNumber;
-		}
-		/**
-		 * @return the fieldId
-		 */
-		public int getFieldId() {
-			return fieldId;
-		}
-		/**
-		 * @param fieldId the fieldId to set
-		 */
-		public void setFieldId(int fieldId) {
-			this.fieldId = fieldId;
-		}
-
-
-		
+		return result.toString();
 	}
-
 }

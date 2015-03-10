@@ -12,7 +12,7 @@ public class SubmitBatch_Result extends Result {
 	 * Stringify the results as defined in the project spec
 	 */
 	public String toString() {
-		return "";
+		return "TRUE";
 	}
 
 }

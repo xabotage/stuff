@@ -6,7 +6,6 @@ import java.util.*;
 
 import server.database.*;
 import shared.model.*;
-import server.*;
 
 public class ServerFacade {
 
@@ -19,14 +18,14 @@ public class ServerFacade {
 		}		
 	}
 	
-	public static boolean validateUser(String userName, String password) throws ServerException, AuthException {
+	public static User validateUser(String userName, String password) throws ServerException, AuthException {
 		Database db = new Database();
 		try {
 			db.startTransaction();
 			User compareUser = db.getUserDAO().readUserWithName(userName);
 			assert(compareUser.getUserName() == userName);
 			if(compareUser.getPassword() == password) {
-				return true;
+				return compareUser;
 			} else {
 				throw new AuthException("User credentials invalid");
 			}
@@ -37,7 +36,7 @@ public class ServerFacade {
 		}
 	}
 	
-	public static Batch downloadBatch(User user, int projectId) throws ServerException {	
+	public static Project downloadBatch(User user, int projectId) throws ServerException {	
 		Database db = new Database();
 		try {
 			db.startTransaction();
@@ -46,12 +45,19 @@ public class ServerFacade {
 				db.endTransaction(false);
 				throw new ServerException("User already has a batch assigned");
 			}
+
+			Project projectWrapper = db.getProjectDAO().readProject(projectId);
+			assert(projectId == projectWrapper.getProjectId());
+			projectWrapper.setFields(db.getFieldDAO().readFieldsForProject(projectId));
+
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
 			assert(batches.size() > 0);
 			for(Batch b : batches) {
-				if(!b.isIndexed()) {
+				if(!b.isIndexed() && b.getAssignedUser() == -1) {
 					db.endTransaction(true);
-					return b;
+					projectWrapper.setBatches(new ArrayList<Batch>());
+					projectWrapper.getBatches().add(b);
+					return projectWrapper;
 				}
 			}
 			db.endTransaction(false);
@@ -115,20 +121,36 @@ public class ServerFacade {
 		}
 	}
 
-	public static void submitBatch(User user, Batch batch) throws ServerException {	
-		// TODO: clear out old records for the batch, then fill in the new ones?
+	public static void submitBatch(Batch batch, String userName) throws ServerException {	
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			user = db.getUserDAO().readUserWithName(user.getUserName());
+			User user = db.getUserDAO().readUserWithName(userName);
+			Batch fullBatch = db.getBatchDAO().readBatch(batch.getBatchId());
+			Project batchProject = db.getProjectDAO().readProject(fullBatch.getProjectId());
+
 			int newIndexedRecords = user.getIndexedRecords();
-			newIndexedRecords += db.getProjectDAO().readProject(batch.getProjectId()).getRecordsPerImage();
+			newIndexedRecords += batchProject.getRecordsPerImage();
 			user.setIndexedRecords(newIndexedRecords);
 			user.setCurrentBatch(-1);
 			db.getUserDAO().updateUser(user);
 
-			batch.setIndexed(true);
-			db.getBatchDAO().updateBatch(batch);
+			fullBatch.setIndexed(true);
+			fullBatch.setAssignedUser(-1);
+			db.getBatchDAO().updateBatch(fullBatch);
+			
+			List<Field> fields = db.getFieldDAO().readFieldsForProject(batchProject.getProjectId());
+			db.getRecordDAO().deleteRecordsForBatch(batch.getBatchId());
+			for(Record r : batch.getRecords()) {
+				assert(r.getBatchId() == batch.getBatchId());
+				assert(r.getRecordNum() > 0);
+				db.getRecordDAO().createRecord(r);
+				for(int i = 0; i < r.getFieldValues().size(); i++) {
+					r.getFieldValues().get(i).setFieldId(fields.get(i).getFieldId());
+					r.getFieldValues().get(i).setRecordId(r.getRecordId());
+					db.getFieldValueDAO().createFieldValue(r.getFieldValues().get(i));
+				}
+			}
 			db.endTransaction(true);
 		}
 		catch (DatabaseException e) {
@@ -137,27 +159,32 @@ public class ServerFacade {
 		}
 	}
 	
-	public static List<SearchResultObject> search(List<Field> fields, List<FieldValue> values) throws ServerException {	
+	public static List<SearchResultObject> search(List<Integer> fieldIds, List<String> values) throws ServerException {	
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			List<FieldValue> matches = db.getFieldValueDAO().findMatchingValuesOfFields(values, fields);
+			List<FieldValue> matches = db.getFieldValueDAO().findMatchingValuesOfFields(values, fieldIds);
 			Record r;
 			Batch b;
 			List<SearchResultObject> searchResults = new ArrayList<SearchResultObject>();
 			SearchResultObject sro;
 			for(FieldValue m : matches) {
 				sro = new SearchResultObject();
-				r = db.getRecordDAO().readRecordsForBatch(m.getRecordId());
+				r = db.getRecordDAO().readRecord(m.getRecordId());
 				b = db.getBatchDAO().readBatch(r.getBatchId());
-				sro.setBatchId(b.getBatchId());
+				sro.setBatchId(r.getBatchId());
 				sro.setImageUrl(new URL(b.getImageFile()));
-				sro.setFieldValueId(m.getValueId());
-				sro.setRecordNumber(r.getRecordNumber());
+				sro.setFieldId(m.getFieldId());
+				sro.setRecordNumber(r.getRecordNum());
+				searchResults.add(sro);
 			}
 			db.endTransaction(true);
+			return searchResults;
 		}
 		catch (DatabaseException e) {
+			db.endTransaction(false);
+			throw new ServerException(e.getMessage(), e);
+		} catch (MalformedURLException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
 		}
