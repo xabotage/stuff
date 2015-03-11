@@ -49,8 +49,9 @@ public class RecordDAO {
 		List<Record> records = new ArrayList<Record>();
 		Record record;
 		try {
-			String getRecordsSQL = "SELECT * FROM Record";
+			String getRecordsSQL = "SELECT * FROM Record WHERE batchId = ?";
 			ps = db.getConnection().prepareStatement(getRecordsSQL);
+			ps.setInt(1, batchId);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				record = new Record();
@@ -137,6 +138,7 @@ public class RecordDAO {
 		}
 	}
 
+	/*
 	public void deleteRecordsForBatch(int batchId) throws DatabaseException {
 		PreparedStatement ps = null;
 		List<Integer> recordIds = new ArrayList<Integer>();
@@ -153,5 +155,6 @@ public class RecordDAO {
 			Database.safeClose(ps);
 		}
 	}
+	*/
 
 }

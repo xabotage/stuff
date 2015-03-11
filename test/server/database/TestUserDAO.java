@@ -1,14 +1,13 @@
-package server;
+package server.database;
 
 import java.util.List;
 
 import org.junit.* ;
 
 import shared.model.*;
-import server.database.*;
 import static org.junit.Assert.* ;
 
-public class ServerUnitTests {
+public class TestUserDAO {
 	
 	@BeforeClass
 	public static void classSetup() throws Exception {
@@ -43,6 +42,19 @@ public class ServerUnitTests {
 	
 	@Test
 	public void testReadUser() throws Exception {
+		User createdUser = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
+		db.getUserDAO().createUser(createdUser);
+		User gotUser = db.getUserDAO().readUser(createdUser.getUserId());
+		assertEquals(gotUser.getFirstName(), createdUser.getFirstName());
+		assertEquals(gotUser.getLastName(), createdUser.getLastName());
+		assertEquals(gotUser.getPassword(), createdUser.getPassword());
+		assertEquals(gotUser.getEmail(), createdUser.getEmail());
+		assertEquals(gotUser.getCurrentBatch(), createdUser.getCurrentBatch());
+		assertEquals(gotUser.getIndexedRecords(), createdUser.getIndexedRecords());
+	}
+
+	@Test
+	public void testCreateUser() throws Exception {
 		User createdUser = new User(-1, "jhigg99", "jacob", "Higgins", "pass1234", "test@test.com", 1, 0);
 		db.getUserDAO().createUser(createdUser);
 		User gotUser = db.getUserDAO().readUser(createdUser.getUserId());
@@ -111,21 +123,5 @@ public class ServerUnitTests {
 		users = db.getUserDAO().readUsers();
 		assertEquals(0, users.size());
 	}
-
-	public static void main(String[] args) {
-		
-		String[] testClasses = new String[] {
-				"server.ServerUnitTests",
-				"server.database.TestUserDAO",
-				"server.database.TestProjectDAO",
-				"server.database.TestRecordDAO",
-				"server.database.TestBatchDAO",
-				"server.database.TestFieldDAO",
-				"server.database.TestFieldValueDAO"
-		};
-
-		org.junit.runner.JUnitCore.main(testClasses);
-	}
-	
 }
 

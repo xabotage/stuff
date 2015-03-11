@@ -53,6 +53,18 @@ public class TestProjectDAO {
 	}
 
 	@Test
+	public void testCreateProject() throws Exception {
+		Project createdProject = new Project("california", 20, 35, 77);
+		db.getProjectDAO().createProject(createdProject);
+		Project gotProject = db.getProjectDAO().readProject(createdProject.getProjectId());
+		assertEquals(gotProject.getProjectId(), createdProject.getProjectId());
+		assertEquals(gotProject.getTitle(), createdProject.getTitle());
+		assertEquals(gotProject.getRecordsPerImage(), createdProject.getRecordsPerImage());
+		assertEquals(gotProject.getRecordHeight(), createdProject.getRecordHeight());
+		assertEquals(gotProject.getFirstYCoord(), createdProject.getFirstYCoord());
+	}
+
+	@Test
 	public void testReadProjects() throws Exception {
 		Project createdProject1 = new Project("california", 20, 35, 77);
 		Project createdProject2 = new Project("florida", 30, 15, 86);

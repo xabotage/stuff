@@ -40,7 +40,7 @@ public class DownloadBatchHandler implements HttpHandler {
 		}
 		
 		DownloadBatch_Result result = new DownloadBatch_Result();
-		assert(gotProject.getBatches().size() == 1);
+		//assert(gotProject.getBatches().size() == 1);
 		result.setBatch(gotProject.getBatches().get(0));
 		result.setProject(gotProject);
 		

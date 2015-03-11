@@ -28,7 +28,7 @@ public class ServerFacade {
 			db.startTransaction();
 			User compareUser = db.getUserDAO().readUserWithName(userName);
 			if(compareUser != null && compareUser.getPassword().equals(password)) {
-				assert(compareUser.getUserName().equals(userName));
+				//assert(compareUser.getUserName().equals(userName));
 				db.endTransaction(true);
 				return compareUser;
 			} else {
@@ -52,11 +52,11 @@ public class ServerFacade {
 				throw new ServerException("User already has a batch assigned");
 			}
 			Project projectWrapper = db.getProjectDAO().readProject(projectId);
-			assert(projectId == projectWrapper.getProjectId());
+			//assert(projectId == projectWrapper.getProjectId());
 			projectWrapper.setFields(db.getFieldDAO().readFieldsForProject(projectId));
 
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
-			assert(batches.size() > 0);
+			//assert(batches.size() > 0);
 			db.endTransaction(true);
 			
 			db.startTransaction();
@@ -126,7 +126,7 @@ public class ServerFacade {
 		try {
 			db.startTransaction();
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
-			assert(batches.size() > 0);
+			//assert(batches.size() > 0);
 			String imageUrl = batches.get(0).getImageFile();
 			db.endTransaction(true);
 			return imageUrl;
@@ -162,8 +162,8 @@ public class ServerFacade {
 			
 			List<Field> fields = db.getFieldDAO().readFieldsForProject(batchProject.getProjectId());
 			for(Record r : batch.getRecords()) {
-				assert(r.getBatchId() == batch.getBatchId());
-				assert(r.getRecordNum() > 0);
+				//assert(r.getBatchId() == batch.getBatchId());
+				//assert(r.getRecordNum() > 0);
 				db.getRecordDAO().createRecord(r);
 				for(int i = 0; i < r.getFieldValues().size(); i++) {
 					r.getFieldValues().get(i).setFieldId(fields.get(i).getFieldId());

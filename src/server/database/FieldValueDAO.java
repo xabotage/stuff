@@ -154,7 +154,7 @@ public class FieldValueDAO {
 				keyRS = keyStmt.executeQuery("SELECT last_insert_rowid()");
 				keyRS.next();
 				int id = keyRS.getInt(1);
-				fv.setFieldId(id);
+				fv.setValueId(id);
 			}
 			else {
 				throw new DatabaseException("Could not insert fieldvalue");
