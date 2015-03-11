@@ -43,7 +43,7 @@ public class TestClientCommunicator {
 		setupdb.endTransaction(true);
 
 		setupdb.startTransaction();
-		Project newProj = new Project("census 2040", 32, 50, 98);
+		Project newProj = new Project("census 2040", 1, 50, 98);
 		setupdb.getProjectDAO().createProject(newProj);
 		newProjectId = newProj.getProjectId();
 		setupdb.endTransaction(true);

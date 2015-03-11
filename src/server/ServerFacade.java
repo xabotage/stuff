@@ -154,6 +154,18 @@ public class ServerFacade {
 				db.endTransaction(false);
 				throw new ServerException("Batch was not assigned to this user");
 			}
+			
+			if(batch.getRecords().size() != batchProject.getRecordsPerImage()) {
+				db.endTransaction(false);
+				throw new ServerException("Invalid number of records on batch. Expecting: " + batchProject.getRecordsPerImage());
+			}
+			List<Field> fields = db.getFieldDAO().readFieldsForProject(batchProject.getProjectId());
+			for(Record r : batch.getRecords()) {
+				if(r.getFieldValues().size() != fields.size()) {
+					db.endTransaction(false);
+					throw new ServerException("Invalid number of fields on record. Expecting: " + fields.size());
+				}
+			}
 			int newIndexedRecords = user.getIndexedRecords();
 			newIndexedRecords += batchProject.getRecordsPerImage();
 			user.setIndexedRecords(newIndexedRecords);
@@ -167,7 +179,6 @@ public class ServerFacade {
 			fullBatch.setAssignedUser(-1);
 			db.getBatchDAO().updateBatch(fullBatch);
 			
-			List<Field> fields = db.getFieldDAO().readFieldsForProject(batchProject.getProjectId());
 			for(Record r : batch.getRecords()) {
 				//assert(r.getBatchId() == batch.getBatchId());
 				//assert(r.getRecordNum() > 0);

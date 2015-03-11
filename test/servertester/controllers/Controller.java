@@ -211,13 +211,13 @@ public class Controller implements IController {
 			Batch b = new Batch();
 			b.setBatchId(Integer.parseInt(rawParams[2]));
 			List<Record> records = new ArrayList<Record>();
-			String[] recordStrings = rawParams[3].split(";");
+			String[] recordStrings = rawParams[3].split(";",-1);
 			int recordNum = 1;
 			for(String rs : recordStrings) {
 				Record record = new Record();
 				record.setRecordNum(recordNum);
 				record.setBatchId(b.getBatchId());
-				String[] valueStrings = rs.split(",");
+				String[] valueStrings = rs.split(",",-1);
 				List<FieldValue> fvs = new ArrayList<FieldValue>();
 				for(String vs : valueStrings) {
 					FieldValue fv = new FieldValue();
