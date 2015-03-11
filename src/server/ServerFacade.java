@@ -27,8 +27,8 @@ public class ServerFacade {
 		try {
 			db.startTransaction();
 			User compareUser = db.getUserDAO().readUserWithName(userName);
-			assert(compareUser.getUserName().equals(userName));
-			if(compareUser.getPassword().equals(password)) {
+			if(compareUser != null && compareUser.getPassword().equals(password)) {
+				assert(compareUser.getUserName().equals(userName));
 				db.endTransaction(true);
 				return compareUser;
 			} else {
@@ -103,11 +103,14 @@ public class ServerFacade {
 		Database db = new Database();
 		try {
 			db.startTransaction();
-			List<Field> fields;
+			List<Field> fields = new ArrayList<Field>();
 			if(projectId == -1) {
 				fields = db.getFieldDAO().readFields();
 			} else {
 				fields = db.getFieldDAO().readFieldsForProject(projectId);
+			}
+			if(fields.size() == 0) {
+				throw new DatabaseException("invalid project id");
 			}
 			db.endTransaction(true);
 			return fields;

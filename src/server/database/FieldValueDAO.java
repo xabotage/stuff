@@ -73,9 +73,9 @@ public class FieldValueDAO {
 			for(int i = 1; i < fieldIds.size(); i++) {
 				getFieldSQLsb.append("OR fieldId = ? ");
 			}
-			getFieldSQLsb.append(") AND (value = ? ");
+			getFieldSQLsb.append(") AND (UPPER(value) = UPPER(?) ");
 			for(int j = 1; j < values.size(); j++) {
-				getFieldSQLsb.append("OR value = ? ");
+				getFieldSQLsb.append("OR UPPER(value) = UPPER(?) ");
 			}
 			getFieldSQLsb.append(")");
 			ps = db.getConnection().prepareStatement(getFieldSQLsb.toString());

@@ -1,10 +1,7 @@
 package server.database;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.w3c.dom.*;
 
@@ -106,7 +103,7 @@ public class IndexerData {
 		int i = 0;
 		for(FieldValue fv : r.getFieldValues()) {
 			fv.setRecordId(r.getRecordId());
-			fv.setFieldId(r.getFieldValues().get(i).getFieldId());
+			fv.setFieldId(currentProjectFields.get(i).getFieldId());
 			// we're definitely making some sort of dumb assumption here 
 			// double check that fv and field match
 			//assert(?);

@@ -184,7 +184,7 @@ public class Controller implements IController {
 														   Integer.parseInt(getView().getPort()));
 			String[] rawParams = getView().getParameterValues();
 			GetFields_Params params = new GetFields_Params();
-			if(rawParams[2] != "") {
+			if(!rawParams[2].equals("")) {
 				params.setProjectId(Integer.parseInt(rawParams[2]));
 			} else {
 				params.setProjectId(-1);
@@ -256,11 +256,18 @@ public class Controller implements IController {
 			params.setFieldIds(fieldIds);
 			
 			// set the search values
-			List<String> searchValues = new ArrayList<String>(Arrays.asList(rawParams[3].split(",")));
+			List<String> searchValues = new ArrayList<String>();
+			for(String sv : Arrays.asList(rawParams[3].split(","))) {
+				if(!sv.equals(""))
+					searchValues.add(sv.toLowerCase());
+			}
 			params.setSearchValue(searchValues);
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
+			if(searchValues.size() == 0) {
+				throw new Exception("No search values specified");
+			}
 			Search_Result result = cu.search(params);
 			result.setUrlBase("http://" + getView().getHost() + ":" + getView().getPort() + "/");
 			getView().setResponse(result.toString());
