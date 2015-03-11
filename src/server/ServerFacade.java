@@ -160,6 +160,9 @@ public class ServerFacade {
 			user.setCurrentBatch(-1);
 			db.getUserDAO().updateUser(user);
 
+			db.endTransaction(true);
+			db.startTransaction();
+
 			fullBatch.setIndexed(true);
 			fullBatch.setAssignedUser(-1);
 			db.getBatchDAO().updateBatch(fullBatch);
