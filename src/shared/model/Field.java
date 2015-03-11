@@ -126,6 +126,16 @@ public class Field {
 	public Field() {
 		fieldId = -1;
 	}
+
+	public Field(String title, int projectId, int xCoord, int width, String helpUrl, String knownData) {
+		fieldId = -1;
+		this.title = title;
+		this.projectId = projectId;
+		this.xCoord = xCoord;
+		this.width = width;
+		this.helpUrl = helpUrl;
+		this.knownData = knownData;
+	}
 	
 	public Field(Element fieldElement) {
 		title = DataImporter.getValue((Element)fieldElement.getElementsByTagName("title").item(0));

@@ -126,6 +126,10 @@ public class ServerFacade {
 		try {
 			db.startTransaction();
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
+			if(batches.size() == 0) {
+				db.endTransaction(false);
+				throw new ServerException("No Batches exist for project: " + projectId);
+			}
 			//assert(batches.size() > 0);
 			String imageUrl = batches.get(0).getImageFile();
 			db.endTransaction(true);
