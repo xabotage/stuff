@@ -117,6 +117,7 @@ public class Controller implements IController {
 			getView().setResponse(cu.validateUser(params).toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}
@@ -133,6 +134,7 @@ public class Controller implements IController {
 			getView().setResponse(cu.getProjects(params).toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}
@@ -151,6 +153,7 @@ public class Controller implements IController {
 			getView().setResponse(urlBase + cu.getSampleImage(params).toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}
@@ -192,6 +195,7 @@ public class Controller implements IController {
 			getView().setResponse(cu.getFields(params).toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}
@@ -225,11 +229,13 @@ public class Controller implements IController {
 				recordNum++;
 			}
 			b.setRecords(records);
+			params.setBatch(b);
 
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
 			getView().setResponse(cu.submitBatch(params).toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}
@@ -255,9 +261,12 @@ public class Controller implements IController {
 			params.setUserName(rawParams[0]);
 			params.setPassword(rawParams[1]);
 			getView().setRequest(new XStream(new DomDriver()).toXML(params));
-			getView().setResponse(cu.search(params).toString());
+			Search_Result result = cu.search(params);
+			result.setUrlBase("http://" + getView().getHost() + ":" + getView().getPort() + "/");
+			getView().setResponse(result.toString());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			getView().setResponse("FAILED");
 		}
 	}

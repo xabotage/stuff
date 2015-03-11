@@ -65,6 +65,7 @@ public class DownloadBatch_Result extends Result {
 		result.append('\n');
 		result.append(batch.getProjectId());
 		result.append('\n');
+		result.append(urlBase);
 		result.append(batch.getImageFile());
 		result.append('\n');
 		result.append(project.getFirstYCoord());

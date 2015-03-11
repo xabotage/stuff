@@ -13,7 +13,24 @@ public class Search_Result extends Result {
 	 */
 	private List<SearchResultObject> searchResults;
 	
+	private String urlBase;
 	
+	/**
+	 * @return the urlBase
+	 */
+	public String getUrlBase() {
+		return urlBase;
+	}
+
+
+	/**
+	 * @param urlBase the urlBase to set
+	 */
+	public void setUrlBase(String urlBase) {
+		this.urlBase = urlBase;
+	}
+
+
 	/**
 	 * @return the searchResults
 	 */
@@ -35,6 +52,7 @@ public class Search_Result extends Result {
 		for(SearchResultObject sro : searchResults) {
 			result.append(sro.getBatchId());
 			result.append('\n');
+			result.append(urlBase);
 			result.append(sro.getImageUrl().toString());
 			result.append('\n');
 			result.append(sro.getRecordNumber());

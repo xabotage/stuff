@@ -1,8 +1,6 @@
 package server;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +12,7 @@ import shared.model.*;
 
 public class ServerFacade {
 	private static final String PROJECT_DATA_PATH = "projectData";
-
+	
 	public static void initialize() throws ServerException {		
 		try {
 			Database.initialize();		
@@ -31,8 +29,10 @@ public class ServerFacade {
 			User compareUser = db.getUserDAO().readUserWithName(userName);
 			assert(compareUser.getUserName().equals(userName));
 			if(compareUser.getPassword().equals(password)) {
+				db.endTransaction(true);
 				return compareUser;
 			} else {
+				db.endTransaction(false);
 				throw new AuthException("User credentials invalid");
 			}
 		}
@@ -51,16 +51,26 @@ public class ServerFacade {
 				db.endTransaction(false);
 				throw new ServerException("User already has a batch assigned");
 			}
-
 			Project projectWrapper = db.getProjectDAO().readProject(projectId);
 			assert(projectId == projectWrapper.getProjectId());
 			projectWrapper.setFields(db.getFieldDAO().readFieldsForProject(projectId));
 
 			List<Batch> batches = db.getBatchDAO().readBatchesForProject(projectId);
 			assert(batches.size() > 0);
+			db.endTransaction(true);
+			
+			db.startTransaction();
 			for(Batch b : batches) {
 				if(!b.isIndexed() && b.getAssignedUser() == -1) {
+					b.setAssignedUser(gotUser.getUserId());
+					db.getBatchDAO().updateBatch(b);
 					db.endTransaction(true);
+
+					db.startTransaction();
+					gotUser.setCurrentBatch(b.getBatchId());
+					db.getUserDAO().updateUser(gotUser);
+					db.endTransaction(true);
+
 					projectWrapper.setBatches(new ArrayList<Batch>());
 					projectWrapper.getBatches().add(b);
 					return projectWrapper;
@@ -128,9 +138,15 @@ public class ServerFacade {
 		try {
 			db.startTransaction();
 			User user = db.getUserDAO().readUserWithName(userName);
+			db.endTransaction(true);
+			db.startTransaction();
 			Batch fullBatch = db.getBatchDAO().readBatch(batch.getBatchId());
 			Project batchProject = db.getProjectDAO().readProject(fullBatch.getProjectId());
-
+			if(user.getCurrentBatch() == -1 || fullBatch.getAssignedUser() == -1 || 
+					user.getUserId() != fullBatch.getAssignedUser()) {
+				db.endTransaction(false);
+				throw new ServerException("Batch was not assigned to this user");
+			}
 			int newIndexedRecords = user.getIndexedRecords();
 			newIndexedRecords += batchProject.getRecordsPerImage();
 			user.setIndexedRecords(newIndexedRecords);
@@ -142,7 +158,6 @@ public class ServerFacade {
 			db.getBatchDAO().updateBatch(fullBatch);
 			
 			List<Field> fields = db.getFieldDAO().readFieldsForProject(batchProject.getProjectId());
-			db.getRecordDAO().deleteRecordsForBatch(batch.getBatchId());
 			for(Record r : batch.getRecords()) {
 				assert(r.getBatchId() == batch.getBatchId());
 				assert(r.getRecordNum() > 0);
@@ -175,7 +190,7 @@ public class ServerFacade {
 				r = db.getRecordDAO().readRecord(m.getRecordId());
 				b = db.getBatchDAO().readBatch(r.getBatchId());
 				sro.setBatchId(r.getBatchId());
-				sro.setImageUrl(new URL(b.getImageFile()));
+				sro.setImageUrl(b.getImageFile());
 				sro.setFieldId(m.getFieldId());
 				sro.setRecordNumber(r.getRecordNum());
 				searchResults.add(sro);
@@ -184,9 +199,6 @@ public class ServerFacade {
 			return searchResults;
 		}
 		catch (DatabaseException e) {
-			db.endTransaction(false);
-			throw new ServerException(e.getMessage(), e);
-		} catch (MalformedURLException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
 		}

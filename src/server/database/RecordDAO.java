@@ -139,13 +139,12 @@ public class RecordDAO {
 
 	public void deleteRecordsForBatch(int batchId) throws DatabaseException {
 		PreparedStatement ps = null;
+		List<Integer> recordIds = new ArrayList<Integer>();
 		try {
 			String deleteRecordSQL = "DELETE FROM Record WHERE batchId = ?";
 			ps = db.getConnection().prepareStatement(deleteRecordSQL);
 			ps.setInt(1, batchId);
-			if (ps.executeUpdate() != 1) {
-				throw new DatabaseException("Could not delete records for batch");
-			}
+			ps.executeUpdate();
 		}
 		catch (SQLException e) {
 			throw new DatabaseException("Could not delete records for batch", e);

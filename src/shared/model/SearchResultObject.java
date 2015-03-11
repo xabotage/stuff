@@ -1,10 +1,9 @@
 package shared.model;
 
-import java.net.URL;
 
 public class SearchResultObject {
 	private int batchId;
-	private URL imageUrl;
+	private String imageUrl;
 	private int recordNumber;
 	private int fieldId;
 	/**
@@ -22,13 +21,13 @@ public class SearchResultObject {
 	/**
 	 * @return the imageUrl
 	 */
-	public URL getImageUrl() {
+	public String getImageUrl() {
 		return imageUrl;
 	}
 	/**
 	 * @param imageUrl the imageUrl to set
 	 */
-	public void setImageUrl(URL imageUrl) {
+	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 	/**
