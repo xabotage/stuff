@@ -39,6 +39,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 	
@@ -82,6 +84,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 
@@ -96,6 +100,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 	
@@ -118,6 +124,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 
@@ -137,6 +145,8 @@ public class ServerFacade {
 		} catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 
@@ -194,6 +204,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 	
@@ -222,6 +234,8 @@ public class ServerFacade {
 		catch (DatabaseException e) {
 			db.endTransaction(false);
 			throw new ServerException(e.getMessage(), e);
+		} finally {
+			db.endTransaction(false);
 		}
 	}
 	
