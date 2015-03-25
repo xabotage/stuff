@@ -1,8 +1,9 @@
 package client;
 
+import java.awt.*;
 import java.util.List;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import shared.model.*;
 
@@ -11,9 +12,10 @@ public class SearchFrame extends JFrame {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
 
-	private ProjectListPanel projectListPanel;
 	private SettingsPanel settingsPanel;
+	private SearchPanel searchPanel;
 	private SearchController controller;
+	private SearchResultPanel searchResultPanel;
 
 	public SearchFrame() {
 		super();
@@ -22,36 +24,51 @@ public class SearchFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
 		settingsPanel = new SettingsPanel();
-		add(settingsPanel);
-		projectListPanel = new ProjectListPanel();
-		add(settingsPanel);
-		projectListPanel.setVisible(false);
+		add(settingsPanel, BorderLayout.NORTH);
+
+		searchPanel = new SearchPanel();
+		add(searchPanel, BorderLayout.CENTER);
+		searchPanel.setVisible(false);
+
+		searchResultPanel = new SearchResultPanel();
+		add(searchResultPanel, BorderLayout.SOUTH);
+		searchResultPanel.setVisible(false);
+		pack();
 	}
 	
 	public void generateProjectsComponent(List<Project> projects) {
-		projectListPanel.setVisible(true);
-		projectListPanel.setProjects(projects);
+		searchPanel.setVisible(true);
+		searchPanel.setProjects(projects);
 		pack();
 	}
 	
 
-	/**
-	 * @return the controller
-	 */
 	public SearchController getController() {
 		return controller;
 	}
 
-	/**
-	 * @param controller the controller to set
-	 */
 	public void setController(SearchController controller) {
 		this.controller = controller;
 		settingsPanel.setController(controller);
+		searchPanel.setController(controller);
+	}
+
+	public String getSearchKeywords() {
+		return searchPanel.getSearchKeywords();
+	}
+
+	public List<Integer> getSelectedFields() {
+		return searchPanel.getSelectedFields();
+	}
+
+	public void setSearchResultImages(List<String> images) {
+		searchResultPanel.setVisible(true);
+		searchResultPanel.setSearchResultImages(images);
+		pack();
 	}
 	
 	public String getUserName() {
-		return settingsPanel.getName();
+		return settingsPanel.getUserName();
 	}
 
 	public String getPassword() {

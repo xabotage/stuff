@@ -1,6 +1,9 @@
 package client;
 
-import java.awt.FlowLayout;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -13,17 +16,20 @@ public class ProjectPanel extends JPanel {
 	private Project project;
 
 	public ProjectPanel(Project project) {
-		this.setLayout(new FlowLayout());
 		this.project = project;
 		this.projectLabel = new JLabel(project.getTitle());
-		this.add(projectLabel);
+		this.add(projectLabel, BorderLayout.NORTH);
 		DefaultListModel<String> lm = new DefaultListModel<String>();
 		for(Field f : project.getFields()) {
 			lm.addElement(f.getTitle());
 		}
-		this.fieldList = new JList();
+		this.fieldList = new JList(lm);
 		fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		this.add(fieldList);
+		this.add(fieldList, BorderLayout.CENTER);
+	}
+
+	public int[] getSelectedFieldIndices()  {
+		return fieldList.getSelectedIndices();
 	}
 
 }

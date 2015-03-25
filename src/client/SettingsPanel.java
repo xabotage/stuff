@@ -1,18 +1,16 @@
 package client;
 
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
-import static servertester.views.Constants.*;
-
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class SettingsPanel extends JPanel {
 	
-	private JTextField _hostTextField;
-	private JTextField _portTextField;
-	private JButton _executeButton;
+	private JTextField hostTextField;
+	private JTextField portTextField;
+	private JButton executeButton;
 	private JTextField userNameField;
 	private JTextField passwordField;
 	private SearchController controller;
@@ -20,18 +18,29 @@ public class SettingsPanel extends JPanel {
 	public SettingsPanel() {
 		super();
 		setLayout(new FlowLayout());
-		add(new JLabel("HOST:"));
-		_hostTextField = new JTextField(30);
-		add(_hostTextField);
-		_hostTextField.setMinimumSize(_hostTextField.getPreferredSize());
+		setPreferredSize(new Dimension(640, 80));
+		add(new JLabel("Host:"));
+		hostTextField = new JTextField(10);
+		hostTextField.setText("localhost");
+		add(hostTextField);
+		hostTextField.setMinimumSize(hostTextField.getPreferredSize());
 
-		add(new JLabel("PORT:"));
-		_portTextField = new JTextField(10);
-		_portTextField.setMinimumSize(_portTextField.getPreferredSize());
-		add(_portTextField);
+		add(new JLabel("Port:"));
+		portTextField = new JTextField(4);
+		portTextField.setText("8989");
+		portTextField.setMinimumSize(portTextField.getPreferredSize());
+		add(portTextField);
 
-		_executeButton = new JButton("Log In");
-		add(_executeButton);	
+		add(new JLabel("User:"));
+		userNameField = new JTextField(7);
+		add(userNameField);
+
+		add(new JLabel("Password:"));
+		passwordField = new JTextField(7);
+		add(passwordField);
+
+		executeButton = new JButton("Log In");
+		add(executeButton);
 		/*
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		
@@ -39,29 +48,29 @@ public class SettingsPanel extends JPanel {
 		add(new JLabel("HOST:"));
 		add(Box.createRigidArea(SINGLE_HSPACE));
 		
-		_hostTextField = new JTextField(30);
-		_hostTextField.setMinimumSize(_hostTextField.getPreferredSize());
-		add(_hostTextField);
+		hostTextField = new JTextField(30);
+		hostTextField.setMinimumSize(hostTextField.getPreferredSize());
+		add(hostTextField);
 		add(Box.createRigidArea(TRIPLE_HSPACE));
 		
 		add(new JLabel("PORT:"));
 		add(Box.createRigidArea(SINGLE_HSPACE));
 		
-		_portTextField = new JTextField(10);
-		_portTextField.setMinimumSize(_portTextField.getPreferredSize());
-		add(_portTextField);
+		portTextField = new JTextField(10);
+		portTextField.setMinimumSize(portTextField.getPreferredSize());
+		add(portTextField);
 		add(Box.createRigidArea(TRIPLE_HSPACE));
 		
 		add(Box.createRigidArea(TRIPLE_HSPACE));
 
-		_executeButton = new JButton("Log In");
-		add(_executeButton);	
+		executeButton = new JButton("Log In");
+		add(executeButton);
 		add(Box.createRigidArea(DOUBLE_HSPACE));
 		*/
 		
 		setMaximumSize(getPreferredSize());
 		
-		_executeButton.addActionListener(new ActionListener() {
+		executeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				controller.getProjectsFromServer();
@@ -70,19 +79,19 @@ public class SettingsPanel extends JPanel {
 	}
 	
 	public void setHost(String value) {
-		_hostTextField.setText(value);
+		hostTextField.setText(value);
 	}
 
 	public String getHost() {
-		return _hostTextField.getText();
+		return hostTextField.getText();
 	}
 
 	public void setPort(String value) {
-		_portTextField.setText(value);
+		portTextField.setText(value);
 	}
 
 	public String getPort() {
-		return _portTextField.getText();
+		return portTextField.getText();
 	}
 	
 	public String getUserName() {
@@ -90,7 +99,7 @@ public class SettingsPanel extends JPanel {
 	}
 
 	public String getPassword() {
-		return userNameField.getText();
+		return passwordField.getText();
 	}
 
 	public SearchController getController() {

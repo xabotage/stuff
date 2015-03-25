@@ -6,3 +6,6 @@ project1.iml
 .idea/
 log.txt*
 projectData/
+.ant-targets-build.xml
+out/
+stuff.iml
