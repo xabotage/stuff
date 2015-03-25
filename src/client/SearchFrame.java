@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import shared.communication.*;
 import shared.model.*;
 
 @SuppressWarnings("serial")
@@ -14,29 +13,57 @@ public class SearchFrame extends JFrame {
 
 	private ProjectListPanel projectListPanel;
 	private SettingsPanel settingsPanel;
+	private SearchController controller;
 
 	public SearchFrame() {
+		super();
 		this.setSize(SearchFrame.DEFAULT_WIDTH, SearchFrame.DEFAULT_HEIGHT);
 		this.setTitle("Search Gui");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
 		settingsPanel = new SettingsPanel();
-		this.add(settingsPanel);
+		add(settingsPanel);
+		projectListPanel = new ProjectListPanel();
+		add(settingsPanel);
+		projectListPanel.setVisible(false);
 	}
 	
-	private void getProjectsFromServer() {
-		ClientCommunicator cu = new ClientCommunicator(settingsPanel.getHost(), 
-				Integer.parseInt(settingsPanel.getPort()));
-		GetProjects_Params params = new GetProjects_Params();
-		params.setUserName(settingsPanel.getUserName());
-		params.setPassword(settingsPanel.getPassword());
-		getView().setRequest(new XStream(new DomDriver()).toXML(params));
-		getView().setResponse(cu.getProjects(params).toString());
+	public void generateProjectsComponent(List<Project> projects) {
+		projectListPanel.setVisible(true);
+		projectListPanel.setProjects(projects);
+		pack();
+	}
+	
 
-		GetProjects_Result result = cu.getProjects(new )
-		this.projectListPanel = new ProjectListPanel(cu.getP);
-		this.removeAll();
-		this.add(projectListPanel);
+	/**
+	 * @return the controller
+	 */
+	public SearchController getController() {
+		return controller;
+	}
+
+	/**
+	 * @param controller the controller to set
+	 */
+	public void setController(SearchController controller) {
+		this.controller = controller;
+		settingsPanel.setController(controller);
+	}
+	
+	public String getUserName() {
+		return settingsPanel.getName();
+	}
+
+	public String getPassword() {
+		return settingsPanel.getPassword();
+	}
+
+	public String getHost() {
+		return settingsPanel.getHost();
+	}
+
+	public String getPort() {
+		return settingsPanel.getPort();
 	}
 
 }

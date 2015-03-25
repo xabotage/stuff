@@ -12,8 +12,9 @@ public class ProjectListPanel extends JPanel {
 	private List<ProjectPanel> projectPanels;
 	private List<Project> projects;
 	
-	public ProjectListPanel(List<Project> projects) {
+	public void setProjects(List<Project> projects) {
 		this.projects = projects;
+		removeAll();
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.projectPanels = new ArrayList<ProjectPanel>();
 		for(Project p : projects) {
