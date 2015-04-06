@@ -1,4 +1,4 @@
-package client;
+package client.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import shared.communication.*;
 import shared.model.Project;
+import client.ClientException;
 import client.communication.*;
 import shared.model.SearchResultObject;
 

@@ -1,4 +1,4 @@
-package client;
+package client.search;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

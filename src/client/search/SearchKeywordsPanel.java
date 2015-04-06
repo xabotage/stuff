@@ -1,4 +1,4 @@
-package client;
+package client.search;
 
 import javax.swing.*;
 import java.awt.*;

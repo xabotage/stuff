@@ -1,4 +1,4 @@
-package client;
+package client.search;
 
 import shared.model.Project;
 

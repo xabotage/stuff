@@ -1,4 +1,4 @@
-package client;
+package client.search;
 
 import java.awt.*;
 
