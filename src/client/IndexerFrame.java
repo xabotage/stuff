@@ -3,6 +3,7 @@ package client;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.*;
@@ -14,13 +15,11 @@ public class IndexerFrame extends JFrame {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
 
+	private JFrame loginPanel;
 	private JMenuBar menuBar;
 	private JMenuItem downloadBatch;
-	private ImageButtons
-	private SettingsPanel settingsPanel;
-	private SearchPanel searchPanel;
-	private SearchController controller;
-	private SearchResultPanel searchResultPanel;
+	//private ImageButtons 
+	private IndexerController controller;
 
 	public IndexerFrame() {
 		super();
@@ -59,10 +58,13 @@ public class IndexerFrame extends JFrame {
 			}
 		});
 		menu.add(exit);
-		menuBar.get
 
 		this.setJMenuBar(menuBar);
+		this.setVisible(false);
 		
+		showLoginDialog();
+		
+		/*
 		settingsPanel = new SettingsPanel();
 		add(settingsPanel, BorderLayout.NORTH);
 
@@ -73,9 +75,45 @@ public class IndexerFrame extends JFrame {
 		searchResultPanel = new SearchResultPanel();
 		add(searchResultPanel, BorderLayout.SOUTH);
 		searchResultPanel.setVisible(false);
+		*/
 		pack();
 	}
-	
+
+	private void showLoginDialog() {
+		JTextField userName = new JTextField(10);
+		JPasswordField password = new JPasswordField(10);
+		JComponent loginComp = new JPanel();
+		loginComp.add(new JLabel("User"));
+		loginComp.add(userName);
+		loginComp.add(new JLabel("Password"));
+		loginComp.add(password);
+
+		JButton executeButton = new JButton("Log In");
+		executeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//controller.getProjectsFromServer();
+			}
+		});
+
+		loginComp.add(executeButton);
+
+		loginComp.setLayout(new FlowLayout());
+		final Object[] inputs = new Object[] { loginComp, "OK" };
+		//JOptionPane.showMessageDialog(null, inputs, "My custom dialog", JOptionPane.PLAIN_MESSAGE);
+		int option = JOptionPane.showOptionDialog(this, null, "Login", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE,
+				null, inputs, null);
+
+		if(option == JOptionPane.CLOSED_OPTION) {
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		}
+		
+		if(option == JOptionPane.OK_OPTION) {
+			controller.
+		}
+	}
+
+	/*
 	public void generateProjectsComponent(List<Project> projects) {
 		searchPanel.setVisible(true);
 		searchPanel.setProjects(projects);
@@ -92,7 +130,7 @@ public class IndexerFrame extends JFrame {
 		settingsPanel.setController(controller);
 		searchPanel.setController(controller);
 	}
-
+	
 	public String getSearchKeywords() {
 		return searchPanel.getSearchKeywords();
 	}
@@ -122,5 +160,6 @@ public class IndexerFrame extends JFrame {
 	public String getPort() {
 		return settingsPanel.getPort();
 	}
+	*/
 
 }
