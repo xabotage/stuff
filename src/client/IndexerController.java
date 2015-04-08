@@ -1,31 +1,71 @@
 package client;
 
+import shared.communication.ValidateUser_Params;
+import shared.communication.ValidateUser_Result;
+import client.communication.ClientCommunicator;
+
 public class IndexerController {
 
-	public IndexerController(IndexerFrame searchFrame) {
-		this.searchFrame = searchFrame;
-	}
+	private IndexerFrame indexerFrame;
+	private int port;
+	private String host;
 
-	private IndexerFrame searchFrame;
+	public IndexerController(IndexerFrame indexerFrame, int port, String host) {
+		this.indexerFrame = indexerFrame;
+		this.port = port;
+		this.host = host;
+	}
 
 	public IndexerFrame getIndexerFrame() {
-		return searchFrame;
+		return indexerFrame;
 	}
 
-	public void setIndexerFrame(IndexerFrame searchFrame) {
-		this.searchFrame = searchFrame;
+	public void setIndexerFrame(IndexerFrame indexerFrame) {
+		this.indexerFrame = indexerFrame;
 	}
 	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+
+	public boolean attemptLogin(String userName, String password) {
+		ClientCommunicator cu = new ClientCommunicator(host, port);
+		ValidateUser_Params params = new ValidateUser_Params();
+		params.setUserName(userName);
+		params.setPassword(password);
+		try {
+			ValidateUser_Result result = cu.validateUser(params);
+			return true;
+		} catch (ClientException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/*
 	public void getProjectsFromServer() {
-		ClientCommunicator cu = new ClientCommunicator(searchFrame.getHost(), 
-				Integer.parseInt(searchFrame.getPort()));
+		ClientCommunicator cu = new ClientCommunicator(indexerFrame.getHost(), 
+				Integer.parseInt(indexerFrame.getPort()));
 		GetProjects_Params params = new GetProjects_Params();
-		params.setUserName(searchFrame.getUserName());
-		params.setPassword(searchFrame.getPassword());
+		params.setUserName(indexerFrame.getUserName());
+		params.setPassword(indexerFrame.getPassword());
 
 		GetFields_Params fParams = new GetFields_Params();
-		fParams.setUserName(searchFrame.getUserName());
-		fParams.setPassword(searchFrame.getPassword());
+		fParams.setUserName(indexerFrame.getUserName());
+		fParams.setPassword(indexerFrame.getPassword());
 		
 		try {
 
@@ -35,9 +75,10 @@ public class IndexerController {
 				fParams.setProjectId(p.getProjectId());
 				p.setFields(cu.getFields(fParams).getFields());
 			}
-			searchFrame.generateProjectsComponent(projects);
+			indexerFrame.generateProjectsComponent(projects);
 		} catch (ClientException e) {
 			e.printStackTrace();
 		}
 	}
+	*/
 }

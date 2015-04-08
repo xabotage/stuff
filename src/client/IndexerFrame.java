@@ -8,17 +8,19 @@ import java.util.List;
 
 import javax.swing.*;
 
+import client.ImageButtonsPanel.ImageButtonListener;
+
 import shared.model.*;
 
 @SuppressWarnings("serial")
-public class IndexerFrame extends JFrame {
+public class IndexerFrame extends JFrame implements ImageButtonListener {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
 
 	private JFrame loginPanel;
 	private JMenuBar menuBar;
 	private JMenuItem downloadBatch;
-	//private ImageButtons 
+	private ImageButtonsPanel imageButtons;
 	private IndexerController controller;
 
 	public IndexerFrame() {
@@ -27,6 +29,7 @@ public class IndexerFrame extends JFrame {
 		this.setTitle("Search Gui");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
+		this.setLayout(new BorderLayout());
 
 		this.menuBar = new JMenuBar();
 		JMenu menu = new JMenu("File");
@@ -60,8 +63,11 @@ public class IndexerFrame extends JFrame {
 		menu.add(exit);
 
 		this.setJMenuBar(menuBar);
-		this.setVisible(false);
 		
+		imageButtons = new ImageButtonsPanel();
+		add(imageButtons, BorderLayout.NORTH);
+
+		this.setVisible(false);
 		showLoginDialog();
 		
 		/*
@@ -109,9 +115,39 @@ public class IndexerFrame extends JFrame {
 		}
 		
 		if(option == JOptionPane.OK_OPTION) {
-			controller.
+			if(controller.attemptLogin(userName.getText(), password.getPassword().toString()))
+				JOptionPane.showMessageDialog(this, "fathead");
+			else
+				JOptionPane.showMessageDialog(this, "fail");
 		}
 	}
+	
+	public void zoomIn() {
+	}
+
+	public void zoomOut() {
+	}
+
+	public void invertImage() {
+	}
+
+	public void toggleHighlight() {
+	}
+
+	public void save() {
+	}
+
+	public void submit() {
+	}
+
+	public IndexerController getController() {
+		return controller;
+	}
+
+	public void setController(IndexerController controller) {
+		this.controller = controller;
+	}
+	
 
 	/*
 	public void generateProjectsComponent(List<Project> projects) {
@@ -121,16 +157,6 @@ public class IndexerFrame extends JFrame {
 	}
 	
 
-	public SearchController getController() {
-		return controller;
-	}
-
-	public void setController(SearchController controller) {
-		this.controller = controller;
-		settingsPanel.setController(controller);
-		searchPanel.setController(controller);
-	}
-	
 	public String getSearchKeywords() {
 		return searchPanel.getSearchKeywords();
 	}
