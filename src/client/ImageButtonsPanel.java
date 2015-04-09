@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class ImageButtonsPanel extends JPanel {
 	
 	private JButton zoomInButton;

@@ -4,23 +4,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.util.List;
 
 import javax.swing.*;
 
 import client.ImageButtonsPanel.ImageButtonListener;
 
-import shared.model.*;
-
 @SuppressWarnings("serial")
 public class IndexerFrame extends JFrame implements ImageButtonListener {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
+	private static final int OK_OPTION = 1;
 
-	private JFrame loginPanel;
+	//private JFrame loginPanel;
 	private JMenuBar menuBar;
 	private JMenuItem downloadBatch;
 	private ImageButtonsPanel imageButtons;
+	private ImageComponent imageComponent;
 	private IndexerController controller;
 
 	public IndexerFrame() {
@@ -66,9 +65,11 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 		
 		imageButtons = new ImageButtonsPanel();
 		add(imageButtons, BorderLayout.NORTH);
+		
+		imageComponent = new ImageComponent();
+		add(imageComponent, BorderLayout.CENTER);
 
 		this.setVisible(false);
-		showLoginDialog();
 		
 		/*
 		settingsPanel = new SettingsPanel();
@@ -85,7 +86,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 		pack();
 	}
 
-	private void showLoginDialog() {
+	public void showLoginDialog() {
 		JTextField userName = new JTextField(10);
 		JPasswordField password = new JPasswordField(10);
 		JComponent loginComp = new JPanel();
@@ -105,20 +106,24 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 		loginComp.add(executeButton);
 
 		loginComp.setLayout(new FlowLayout());
-		final Object[] inputs = new Object[] { loginComp, "OK" };
+		final Object[] inputs = new Object[] { loginComp, "OK", "Exit" };
 		//JOptionPane.showMessageDialog(null, inputs, "My custom dialog", JOptionPane.PLAIN_MESSAGE);
-		int option = JOptionPane.showOptionDialog(this, null, "Login", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE,
+		int option = JOptionPane.showOptionDialog(this, null, "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, inputs, null);
 
 		if(option == JOptionPane.CLOSED_OPTION) {
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
 		
-		if(option == JOptionPane.OK_OPTION) {
-			if(controller.attemptLogin(userName.getText(), password.getPassword().toString()))
+		if(option == OK_OPTION) {
+			if(controller.attemptLogin(userName.getText(), password.getPassword().toString())) {
 				JOptionPane.showMessageDialog(this, "fathead");
-			else
+				this.setVisible(true);
+			}
+			else {
 				JOptionPane.showMessageDialog(this, "fail");
+				showLoginDialog();
+			}
 		}
 	}
 	

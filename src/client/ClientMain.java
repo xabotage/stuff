@@ -11,6 +11,8 @@ public class ClientMain {
 		EventQueue.invokeLater(new Runnable() {		
 			public void run() {
 				IndexerFrame frame = new IndexerFrame();
+				frame.setController(new IndexerController(frame, 8989, "localhost"));
+				frame.showLoginDialog();
 				//frame.setVisible(true);
 			}
 		});

@@ -48,7 +48,10 @@ public class IndexerController {
 		params.setPassword(password);
 		try {
 			ValidateUser_Result result = cu.validateUser(params);
-			return true;
+			if(result.getUser() != null)
+				return true;
+			else
+				return false;
 		} catch (ClientException e) {
 			e.printStackTrace();
 			return false;
