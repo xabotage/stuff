@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 public class ImageComponent extends JPanel {
 	private Image batchImage;
 	private Rectangle2D rect;
+
 	private double scale;
 	private int translateX;
 	private int translateY;
@@ -41,17 +42,27 @@ public class ImageComponent extends JPanel {
 		this.rect = new Rectangle2D.Double(0, 0, batchImage.getWidth(null), batchImage.getHeight(null)).getBounds2D();
 	}
 
+	public double getScale() {
+		return scale;
+	}
+
+	public void setScale(double scale) {
+		this.scale = scale;
+	}
+
+
 	public ImageComponent() {
 		rect = new Rectangle2D.Double(0, 0, 0, 0);
 		scale = 1.0;
 		translateX = translateY = 0;
 		initDrag();
-		listeners = new ArrayList<>();
+		listeners = new ArrayList<ImageComponentListener>();
 
 		this.addMouseListener(new MouseAdapter() {
 			@Override 
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				scale += e.getPreciseWheelRotation();
+				notifyScaleChanged(scale);
 			}
 			
 			@Override
@@ -146,7 +157,13 @@ public class ImageComponent extends JPanel {
 			l.translationChanged(newTranslateX, newTranslateY);
 		}
 	}
-	
+
+	private void notifyScaleChanged(double newScale) {
+		for (ImageComponentListener l : listeners) {
+			l.scaleChanged(newScale);
+		}
+	}
+
 	private void initDrag() {
 		dragging = false;
 		dragStartX = 0;
@@ -157,6 +174,7 @@ public class ImageComponent extends JPanel {
 	}
 
 	public interface ImageComponentListener {
-		public void translationChanged(int newTranslateX, int newTranslateY);
+		void translationChanged(int newTranslateX, int newTranslateY);
+		void scaleChanged(double newScale);
 	}
 }

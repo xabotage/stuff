@@ -8,12 +8,23 @@ import javax.swing.JOptionPane;
 public class ClientMain {
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {		
+		String host = "localhost";
+		int port = 8989;
+		if(args.length == 2) {
+			if (!host.equals(""))
+				host = args[0];
+			if (!args[1].equals(""))
+				port = Integer.parseInt(args[1]);
+		}
+
+		final int fPort = port;
+		final String fHost = host;
+
+		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				IndexerFrame frame = new IndexerFrame();
-				frame.setController(new IndexerController(frame, 8989, "localhost"));
+				frame.setController(new IndexerController(frame, fPort, fHost));
 				frame.showLoginDialog();
-				//frame.setVisible(true);
 			}
 		});
 	}

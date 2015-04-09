@@ -3,7 +3,7 @@ package client.state;
 import java.util.ArrayList;
 import java.util.List;
 
-class BatchState {
+public class BatchState {
 	
 	private String[][] values;
 	private Cell selectedCell;
@@ -44,15 +44,16 @@ class BatchState {
 	public Cell getSelectedCell() {
 		return selectedCell;
 	}
-}
 
-class Cell {
-	int record;
-	int field;
-}
+	public class Cell {
+		int record;
+		int field;
+	}
 
-interface BatchStateListener {
-	
-	public void valueChanged(Cell cell, String newValue);
-	public void selectedCellChanged(Cell newSelectedCell);
+	public interface BatchStateListener {
+
+		public void valueChanged(Cell cell, String newValue);
+		public void selectedCellChanged(Cell newSelectedCell);
+	}
+
 }

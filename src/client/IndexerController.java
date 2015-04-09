@@ -3,17 +3,25 @@ package client;
 import shared.communication.ValidateUser_Params;
 import shared.communication.ValidateUser_Result;
 import client.communication.ClientCommunicator;
+import shared.model.User;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class IndexerController {
+	public static final String PROPERTIES_PATH = "userProperties/";
 
 	private IndexerFrame indexerFrame;
 	private int port;
 	private String host;
 
+	private IndexerProperties properties;
+
 	public IndexerController(IndexerFrame indexerFrame, int port, String host) {
 		this.indexerFrame = indexerFrame;
 		this.port = port;
 		this.host = host;
+		properties = new IndexerProperties();
 	}
 
 	public IndexerFrame getIndexerFrame() {
@@ -41,20 +49,26 @@ public class IndexerController {
 	}
 
 
-	public boolean attemptLogin(String userName, String password) {
+	public User attemptLogin(String userName, String password) {
 		ClientCommunicator cu = new ClientCommunicator(host, port);
 		ValidateUser_Params params = new ValidateUser_Params();
 		params.setUserName(userName);
 		params.setPassword(password);
 		try {
 			ValidateUser_Result result = cu.validateUser(params);
-			if(result.getUser() != null)
-				return true;
-			else
-				return false;
+			return result.getUser();
 		} catch (ClientException e) {
 			e.printStackTrace();
-			return false;
+			return null;
+		}
+	}
+
+	public void loadUserProperties(User user) {
+		try {
+			properties.load(new FileReader(PROPERTIES_PATH + user.getUserName() + ".properties"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
 		}
 	}
 

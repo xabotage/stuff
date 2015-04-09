@@ -8,9 +8,11 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 import client.ImageButtonsPanel.ImageButtonListener;
+import client.state.*;
+import shared.model.User;
 
 @SuppressWarnings("serial")
-public class IndexerFrame extends JFrame implements ImageButtonListener {
+public class IndexerFrame extends JFrame implements ImageButtonListener, ImageComponent.ImageComponentListener {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
 	private static final int OK_OPTION = 1;
@@ -20,7 +22,13 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 	private JMenuItem downloadBatch;
 	private ImageButtonsPanel imageButtons;
 	private ImageComponent imageComponent;
+	private ImageNavigator imageNavigator;
+
 	private IndexerController controller;
+
+	private WindowState windowState;
+	private ImageState imageState;
+	private BatchState batchState;
 
 	public IndexerFrame() {
 		super();
@@ -30,59 +38,31 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 		this.setLocation(200, 200);
 		this.setLayout(new BorderLayout());
 
-		this.menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
-
-		this.downloadBatch = new JMenuItem("Download Batch");
-		downloadBatch.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		downloadBatch.setEnabled(false);
-		menu.add(downloadBatch);
-		
-		JMenuItem logout = new JMenuItem("Logout");
-		logout.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		menu.add(logout);
-
-		JMenuItem exit = new JMenuItem("Exit");
-		logout.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		menu.add(exit);
-
-		this.setJMenuBar(menuBar);
-		
+		setupMenu();
 		imageButtons = new ImageButtonsPanel();
 		add(imageButtons, BorderLayout.NORTH);
-		
+
 		imageComponent = new ImageComponent();
-		add(imageComponent, BorderLayout.CENTER);
+		imageComponent.addImageComponentListener(this);
+
+		imageNavigator = new ImageNavigator();
+
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		JTabbedPane leftTabbedPane = new JTabbedPane();
+		JTabbedPane rightTabbedPane = new JTabbedPane();
+
+		rightTabbedPane.add("Image Navigator", imageNavigator);
+
+		bottomSplitPane.add(leftTabbedPane, JSplitPane.LEFT);
+		bottomSplitPane.add(rightTabbedPane, JSplitPane.RIGHT);
+		mainSplitPane.add(bottomSplitPane, JSplitPane.BOTTOM);
+
+		mainSplitPane.add(imageComponent, JSplitPane.TOP);
+		add(mainSplitPane, BorderLayout.CENTER);
 
 		this.setVisible(false);
-		
-		/*
-		settingsPanel = new SettingsPanel();
-		add(settingsPanel, BorderLayout.NORTH);
 
-		searchPanel = new SearchPanel();
-		add(searchPanel, BorderLayout.CENTER);
-		searchPanel.setVisible(false);
-
-		searchResultPanel = new SearchResultPanel();
-		add(searchResultPanel, BorderLayout.SOUTH);
-		searchResultPanel.setVisible(false);
-		*/
 		pack();
 	}
 
@@ -116,17 +96,68 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 		}
 		
 		if(option == OK_OPTION) {
-			if(controller.attemptLogin(userName.getText(), password.getPassword().toString())) {
-				JOptionPane.showMessageDialog(this, "fathead");
-				this.setVisible(true);
+			User user =  controller.attemptLogin(userName.getText(), new String(password.getPassword()));
+			if(user != null) {
+				loginUser(user);
 			}
 			else {
-				JOptionPane.showMessageDialog(this, "fail");
+				JOptionPane.showMessageDialog(this, "Invalid User Credentials");
 				showLoginDialog();
 			}
 		}
 	}
-	
+
+	private void loginUser(User user) {
+		String welcome = "Welcome, " + user.getFirstName() + " " + user.getLastName() + ". You have " + user.getIndexedRecords() + "indexed records.";
+		JOptionPane.showMessageDialog(this, welcome);
+		controller.loadUserProperties(user);
+		this.setVisible(true);
+		repaint();
+		revalidate();
+		pack();
+	}
+
+	private void setupMenu() {
+		this.menuBar = new JMenuBar();
+		JMenu menu = new JMenu("File");
+
+		this.downloadBatch = new JMenuItem("Download Batch");
+		downloadBatch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
+		downloadBatch.setEnabled(false);
+		menu.add(downloadBatch);
+
+		JMenuItem logout = new JMenuItem("Logout");
+		logout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
+		menu.add(logout);
+
+		JMenuItem exit = new JMenuItem("Exit");
+		logout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
+		menu.add(exit);
+
+		menuBar.add(menu);
+		menuBar.setVisible(true);
+		this.setJMenuBar(menuBar);
+	}
+
+
+
+	/** --------------      Image Buttons Listener Functions **/
+
 	public void zoomIn() {
 	}
 
@@ -143,6 +174,20 @@ public class IndexerFrame extends JFrame implements ImageButtonListener {
 	}
 
 	public void submit() {
+	}
+
+	/** --------------      Image Component Listener Functions **/
+
+	public void translationChanged(int newTranslateX, int newTranslateY) {
+		imageComponent.setTranslation(newTranslateX, newTranslateY);
+		imageNavigator.setTranslation(newTranslateX, newTranslateY);
+		imageState.setTranslation(newTranslateX, newTranslateY);
+	}
+
+	public void scaleChanged(double newScale) {
+		imageComponent.setScale(newScale);
+		imageNavigator.setScale(newScale);
+		imageState.setScale(newScale);
 	}
 
 	public IndexerController getController() {
