@@ -1,27 +1,24 @@
 package client;
 
-import shared.communication.ValidateUser_Params;
-import shared.communication.ValidateUser_Result;
-import client.communication.ClientCommunicator;
+import shared.communication.*;
 import shared.model.User;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.util.List;
+
+import client.communication.ClientCommunicator;
+import shared.model.*;
 
 public class IndexerController {
-	public static final String PROPERTIES_PATH = "userProperties/";
-
 	private IndexerFrame indexerFrame;
 	private int port;
 	private String host;
-
-	private IndexerProperties properties;
+	private String urlBase;
 
 	public IndexerController(IndexerFrame indexerFrame, int port, String host) {
 		this.indexerFrame = indexerFrame;
 		this.port = port;
 		this.host = host;
-		properties = new IndexerProperties();
+		this.urlBase = "http://" + host + ":" + port + "/";
 	}
 
 	public IndexerFrame getIndexerFrame() {
@@ -63,26 +60,16 @@ public class IndexerController {
 		}
 	}
 
-	public void loadUserProperties(User user) {
-		try {
-			properties.load(new FileReader(PROPERTIES_PATH + user.getUserName() + ".properties"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-	}
 
-	/*
-	public void getProjectsFromServer() {
-		ClientCommunicator cu = new ClientCommunicator(indexerFrame.getHost(), 
-				Integer.parseInt(indexerFrame.getPort()));
+	public List<Project> getProjects(User user) {
+		ClientCommunicator cu = new ClientCommunicator(host, port);
 		GetProjects_Params params = new GetProjects_Params();
-		params.setUserName(indexerFrame.getUserName());
-		params.setPassword(indexerFrame.getPassword());
+		params.setUserName(user.getUserName());
+		params.setPassword(user.getPassword());
 
 		GetFields_Params fParams = new GetFields_Params();
-		fParams.setUserName(indexerFrame.getUserName());
-		fParams.setPassword(indexerFrame.getPassword());
+		fParams.setUserName(user.getUserName());
+		fParams.setPassword(user.getPassword());
 		
 		try {
 
@@ -92,10 +79,26 @@ public class IndexerController {
 				fParams.setProjectId(p.getProjectId());
 				p.setFields(cu.getFields(fParams).getFields());
 			}
-			indexerFrame.generateProjectsComponent(projects);
+			return projects;
 		} catch (ClientException e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
-	*/
+	
+	public String getSampleImageForProject(Project project, User user) {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(host, port);
+			GetSampleImage_Params params = new GetSampleImage_Params();
+			params.setProjectId(project.getProjectId());
+			params.setUserName(user.getUserName());
+			params.setPassword(user.getPassword());
+			GetSampleImage_Result result = cu.getSampleImage(params);
+			return urlBase + result.getImageUrl();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }

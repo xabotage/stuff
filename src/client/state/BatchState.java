@@ -9,6 +9,11 @@ public class BatchState {
 	private Cell selectedCell;
 	private List<BatchStateListener> listeners;
 	
+	public BatchState() {
+		selectedCell = null;
+		listeners = new ArrayList<BatchStateListener>();
+	}
+	
 	public BatchState(int records, int fields) {
 		values = new String[records][fields];
 		selectedCell = null;

@@ -24,6 +24,9 @@ public class ImageComponent extends JPanel {
 	private int translateX;
 	private int translateY;
 	
+	private boolean imageInverted;
+	private boolean highlightsVisible;
+	
 	private boolean dragging;
 	private int dragStartX;
 	private int dragStartY;
@@ -51,10 +54,40 @@ public class ImageComponent extends JPanel {
 	}
 
 
+	/**
+	 * @return the imageInverted
+	 */
+	public boolean isImageInverted() {
+		return imageInverted;
+	}
+
+	/**
+	 * @param imageInverted the imageInverted to set
+	 */
+	public void setImageInverted(boolean imageInverted) {
+		this.imageInverted = imageInverted;
+	}
+
+	/**
+	 * @return the highlightsVisible
+	 */
+	public boolean isHighlightsVisible() {
+		return highlightsVisible;
+	}
+
+	/**
+	 * @param highlightsVisible the highlightsVisible to set
+	 */
+	public void setHighlightsVisible(boolean highlightsVisible) {
+		this.highlightsVisible = highlightsVisible;
+	}
+
 	public ImageComponent() {
 		rect = new Rectangle2D.Double(0, 0, 0, 0);
 		scale = 1.0;
 		translateX = translateY = 0;
+		imageInverted = false;
+		highlightsVisible = false;
 		initDrag();
 		listeners = new ArrayList<ImageComponentListener>();
 

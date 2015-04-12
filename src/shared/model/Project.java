@@ -165,4 +165,9 @@ public class Project {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return this.title;
+	}
+	
 }
