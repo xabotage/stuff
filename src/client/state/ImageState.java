@@ -5,6 +5,7 @@ public class ImageState {
 	private int translateY;
 	private double scale;
 
+
 	public ImageState() {
 		translateX = 0;
 		translateY = 0;

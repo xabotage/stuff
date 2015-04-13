@@ -1,13 +1,8 @@
 package client;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -36,7 +31,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 		
 	@Override
 	public void selectedCellChanged(Cell newSelectedCell) {
-		// TODO Auto-generated method stub
+		recordNumList.setSelectedIndex(newSelectedCell.record);
 	}
 
 	@Override
@@ -49,15 +44,21 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 		recordNumList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				Cell c = batchState.new Cell();
-				c.record = e.getFirstIndex();
-				c.field = batchState.getSelectedCell().field;
-				batchState.setSelectedCell(c);
+				if (!e.getValueIsAdjusting()) {
+					JList source = (JList) e.getSource();
+					Cell c = batchState.new Cell();
+					c.record = source.getSelectedIndex();
+					c.field = batchState.getSelectedCell().field;
+					batchState.setSelectedCell(c);
+				}
 			}
 		});
 
 		recordNumList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.add(recordNumList, BorderLayout.WEST);
+		recordNumList.setPreferredSize(new Dimension(100, 100));
+		recordNumList.setSelectedIndex(0);
+		JScrollPane scrollPane = new JScrollPane(recordNumList);
+		this.add(scrollPane, BorderLayout.WEST);
 
 		this.formInputPanel = new JPanel(new GridLayout(batchState.getProject().getFields().size(), 2));
 		int fieldNum = 0; // TODO: start at 1 or 0?
@@ -68,6 +69,6 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 			fieldNum++;
 		}
 		
-		this.add(formInputPanel, BorderLayout.EAST);
+		this.add(formInputPanel, BorderLayout.CENTER);
 	}
 }

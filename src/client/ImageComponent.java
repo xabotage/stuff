@@ -1,8 +1,6 @@
 package client;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -10,6 +8,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import client.state.BatchState;
 import client.state.BatchState.BatchStateListener;
 import client.state.BatchState.Cell;
+import shared.model.Field;
 
 @SuppressWarnings("serial")
 public class ImageComponent extends JPanel implements BatchStateListener {
@@ -76,8 +77,8 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 		this.highlightsVisible = highlightsVisible;
 	}
 
-	public ImageComponent(BatchState batchState) {
-		this.batchState = batchState;
+	public ImageComponent(BatchState bState) {
+		this.batchState = bState;
 		batchState.addListener(this);
 		rect = new Rectangle2D.Double(0, 0, 0, 0);
 		scale = 1.0;
@@ -87,22 +88,26 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 		initDrag();
 		listeners = new ArrayList<ImageComponentListener>();
 
-		this.addMouseListener(new MouseAdapter() {
-			@Override 
+		MouseAdapter mouse = new MouseAdapter() {
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				scale += e.getPreciseWheelRotation();
+				scale -= e.getPreciseWheelRotation() * 0.125;
+				if(scale <= 0.25)
+					scale = 0.25;
+				else if(scale >= 4)
+					scale = 4;
 				notifyScaleChanged(scale);
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				int d_X = e.getX();
 				int d_Y = e.getY();
-				
+
 				AffineTransform transform = new AffineTransform();
 				transform.scale(scale, scale);
 				transform.translate(translateX, translateY);
-				
+
 				Point2D d_Pt = new Point2D.Double(d_X, d_Y);
 				Point2D w_Pt = new Point2D.Double();
 				try {
@@ -110,23 +115,63 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 				} catch (NoninvertibleTransformException ex) {
 					return;
 				}
-				int w_X = (int)w_Pt.getX();
-				int w_Y = (int)w_Pt.getY();
-				
-				dragging = true;		
+				int w_X = (int) w_Pt.getX();
+				int w_Y = (int) w_Pt.getY();
+
+				dragging = true;
 				dragStartX = w_X;
-				dragStartY = w_Y;		
+				dragStartY = w_Y;
 				dragStartTranslateX = translateX;
 				dragStartTranslateY = translateY;
 				dragTransform = transform;
 			}
 
 			@Override
-			public void mouseDragged(MouseEvent e) {		
+			public void mouseClicked(MouseEvent e) {
+				if(batchImage != null) {
+					double x = e.getX();
+					double y = e.getY();
+					x -= getWidth() / 2.0;
+					y -= getHeight() / 2.0;
+					x /= scale;
+					y /= scale;
+					x += batchImage.getWidth(null) / 2.0 - translateX;
+					y += batchImage.getHeight(null) / 2.0 - translateY;
+
+					y -= batchState.getProject().getFirstYCoord();
+					y /= (double)batchState.getProject().getRecordHeight();
+					if(y > 0 && y < batchState.getProject().getRecordsPerImage()) {
+						int fieldIdx = 0;
+						boolean xfound = false;
+						for(Field f : batchState.getProject().getFields()) {
+							if(fieldIdx == 0) {
+								x -= f.getxCoord();
+								if (x < 0)
+									break;
+							}
+							if(x - f.getWidth() < 0) {
+								xfound = true;
+								break;
+							}
+							x -= f.getWidth();
+							fieldIdx++;
+						}
+						if(xfound) {
+							Cell c = batchState.new Cell();
+							c.record = (int)Math.floor(y);
+							c.field = fieldIdx;
+							batchState.setSelectedCell(c);
+						}
+					}
+				}
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
 				if (dragging) {
 					int d_X = e.getX();
 					int d_Y = e.getY();
-					
+
 					Point2D d_Pt = new Point2D.Double(d_X, d_Y);
 					Point2D w_Pt = new Point2D.Double();
 					try {
@@ -134,17 +179,17 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 					} catch (NoninvertibleTransformException ex) {
 						return;
 					}
-					int w_X = (int)w_Pt.getX();
-					int w_Y = (int)w_Pt.getY();
-					
+					int w_X = (int) w_Pt.getX();
+					int w_Y = (int) w_Pt.getY();
+
 					int w_deltaX = w_X - dragStartX;
 					int w_deltaY = w_Y - dragStartY;
-					
+
 					translateX = dragStartTranslateX + w_deltaX;
 					translateY = dragStartTranslateY + w_deltaY;
-					
+
 					notifyTranslationChanged(translateX, translateY);
-					
+
 					repaint();
 				}
 			}
@@ -153,7 +198,11 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 			public void mouseReleased(MouseEvent e) {
 				initDrag();
 			}
-		});
+		};
+
+		this.addMouseListener(mouse);
+		this.addMouseMotionListener(mouse);
+		this.addMouseWheelListener(mouse);
 	}
 	
 	@Override
@@ -161,12 +210,24 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 		super.paintComponent(g);
 		if(batchImage != null) {
 			Graphics2D g2 = (Graphics2D)g;
-			g2.translate(this.getWidth()/2.0, this.getHeight()/2.0);
+
+			/*
+			g2.translate(translateX, translateY);
+			g2.scale(scale, scale);
+			*/
+			g2.translate(this.getWidth() / 2.0, this.getHeight() / 2.0);
 			g2.scale(scale, scale);
 			g2.translate(-batchImage.getWidth(null)/2.0 + translateX, 
 					-batchImage.getHeight(null)/2.0 + translateY);
 			Rectangle2D bounds = rect.getBounds2D();
-			g2.drawImage(batchImage, (int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMaxX(), (int)bounds.getMaxY(),
+			/*
+			Image finalImage = new BufferedImage(batchImage);
+			if(imageInverted) {
+				RescaleOp inverter = new RescaleOp(-1f, 255f, null);
+				batchImage = op.filter((BufferedImage)batchImage, null);
+			}
+			*/
+			g2.drawImage(batchImage, (int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMaxX(), (int) bounds.getMaxY(),
 					0, 0, batchImage.getWidth(null), batchImage.getHeight(null), null);
 			
 			if(highlightsVisible && batchState.getSelectedCell() != null) {
@@ -175,11 +236,12 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 				int y = batchState.getProject().getFirstYCoord() + (batchState.getProject().getRecordHeight() * c.record);
 				int width = batchState.getProject().getFields().get(c.field).getWidth();
 				int height = batchState.getProject().getRecordHeight();
-				g2.fillRect((int)bounds.getMinX() + x, (int)bounds.getMinY() + y, width, height);
+				g2.setColor(new Color(0, 0, 255, 64));
+				g2.fillRect((int) bounds.getMinX() + x, (int) bounds.getMinY() + y, width, height);
 			}
 		}
 	}
-	
+
 	public void setTranslation(int newTranslateX, int newTranslateY) {
 		translateX = newTranslateX;
 		translateY = newTranslateY;
@@ -230,8 +292,9 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 	@Override
 	public void batchLoaded() {
 		try {
-			URL imageUrl = new URL(batchState.getBatchImageUrl());
+			URL imageUrl = new URL(batchState.getUrlBase() + batchState.getBatchImageUrl());
 			batchImage = ImageIO.read(imageUrl);
+			rect = new Rectangle2D.Double(0, 0, batchImage.getWidth(null), batchImage.getHeight(null));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

@@ -3,6 +3,7 @@ package client;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -48,6 +49,7 @@ public class ImageButtonsPanel extends JPanel {
 		submitButton.addActionListener(actionListener);
 		add(submitButton);
 
+		listeners = new ArrayList<>();
 	}
 	
 	private ActionListener actionListener = new ActionListener() {
@@ -69,13 +71,17 @@ public class ImageButtonsPanel extends JPanel {
 		}
 	};
 
+	public void addImageButtonListener(ImageButtonListener l) {
+		listeners.add(l);
+	}
+
 	public interface ImageButtonListener {
-		public void zoomIn();
-		public void zoomOut();
-		public void invertImage();
-		public void toggleHighlight();
-		public void save();
-		public void submit();
+		void zoomIn();
+		void zoomOut();
+		void invertImage();
+		void toggleHighlight();
+		void save();
+		void submit();
 	}
 }
 

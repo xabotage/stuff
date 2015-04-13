@@ -28,7 +28,9 @@ import client.state.*;
 import shared.model.*;
 
 @SuppressWarnings({"serial", "rawtypes"})
-public class IndexerFrame extends JFrame implements ImageButtonListener, ImageComponent.ImageComponentListener {
+public class IndexerFrame extends JFrame implements ImageButtonListener,
+		ImageComponent.ImageComponentListener,
+		BatchState.BatchStateListener {
 	public static final int DEFAULT_WIDTH = 640;
 	public static final int DEFAULT_HEIGHT = 480;
 	public static final String PROPERTIES_PATH = "userProperties/";
@@ -59,7 +61,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	public IndexerFrame() {
 		super();
 		this.setSize(IndexerFrame.DEFAULT_WIDTH, IndexerFrame.DEFAULT_HEIGHT);
-		this.setTitle("Search Gui");
+		this.setTitle("Record Indexer");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
 		this.setLayout(new BorderLayout());
@@ -73,6 +75,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		
 		imageState = new ImageState();
 		batchState = new BatchState();
+		batchState.addListener(this);
 		windowState = new WindowState();
 		properties = new IndexerProperties();
 		
@@ -90,7 +93,6 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 
 		this.setVisible(false);
 
-		pack();
 	}
 
 	public void showLoginDialog() {
@@ -138,7 +140,6 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		this.setVisible(true);
 		repaint();
 		revalidate();
-		pack();
 	}
 
 	private void setupMenu() {
@@ -180,6 +181,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	
 	private void addImageButtons() {
 		imageButtons = new ImageButtonsPanel();
+		imageButtons.addImageButtonListener(this);
 		add(imageButtons, BorderLayout.NORTH);
 	}
 	
@@ -218,7 +220,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		viewSampleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				displayImageSampleDialog(controller.getSampleImageForProject((Project)projectChooser.getSelectedItem(), currentUser));
+				displayImageSampleDialog(controller.getSampleImageForProject((Project) projectChooser.getSelectedItem(), currentUser));
 			}
 		});
 		JPanel downloadBatchPanel = new JPanel(new FlowLayout());
@@ -228,8 +230,14 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		int result = JOptionPane.showOptionDialog(this, downloadBatchPanel, "Download New Batch", 
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 		if(result == JOptionPane.OK_OPTION) {
-			controller.downloadBatch((Project)projectChooser.getSelectedItem(), currentUser);
+			String imageUrl = controller.downloadBatch((Project)projectChooser.getSelectedItem(), currentUser).getImageFile();
+			initializeBatchAndProject((Project) projectChooser.getSelectedItem(), imageUrl);
 		}
+	}
+
+	private void initializeBatchAndProject(Project project, String imageUrl) {
+		downloadBatch.setEnabled(false);
+		batchState.loadBatch(project, imageUrl);
 	}
 	
 	private void displayImageSampleDialog(String sampleUrl) {
@@ -269,6 +277,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 
 	public void loadUserProperties() {
 		try {
+			batchState.setUrlBase("http://" + controller.getHost() + ":" + controller.getPort() + "/");
 			File propFile = new File(PROPERTIES_PATH + currentUser.getUserName() + ".properties");
 			if(!propFile.exists()) {
 				loadDefaultProperties();
@@ -283,19 +292,26 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 				
 				// Window properties
 				this.setSize(properties.getIntProperty("windowSizeX"), properties.getIntProperty("windowSizeY"));
+				revalidate();
+				repaint();
 				this.setLocation(properties.getIntProperty("windowPosX"), properties.getIntProperty("windowPosY"));
 				mainSplitPane.setDividerLocation(properties.getIntProperty("mainSplitLocation"));
 				bottomSplitPane.setDividerLocation(properties.getIntProperty("bottomSplitLocation"));
-				
+				revalidate();
+				repaint();
+
 				// Batch properties
-				batchState.setBatchImageUrl(properties.getProperty("batchImageUrl"));
-				batchState.setProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser));
+				if(currentUser.getCurrentBatch() != -1) { // user has a batch assigned
+					String imageUrl = properties.getProperty("batchImageUrl");
+					initializeBatchAndProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser), imageUrl);
+				}
 			}
-			this.repaint();
-			this.revalidate();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
+		} finally {
+			this.repaint();
+			this.revalidate();
 		}
 	}
 	
@@ -307,7 +323,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		properties.setIntProperty("translationX", imageState.getTranslateX());
 		properties.setIntProperty("translationY", imageState.getTranslateY());
 		properties.setDoubleProperty("scale", imageState.getScale());
-		properties.setBoolProperty("highlightsVisble", imageComponent.isHighlightsVisible());
+		properties.setBoolProperty("highlightsVisible", imageComponent.isHighlightsVisible());
 		properties.setBoolProperty("imageInverted", imageComponent.isImageInverted());
 		
 		// Window properties
@@ -321,6 +337,9 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		
 		// Batch properties
 		properties.setProperty("batchImageUrl", batchState.getBatchImageUrl());
+		if(batchState.getProject() != null) {
+			properties.setIntProperty("projectId", batchState.getProject().getProjectId());
+		}
 
 		try {
 			properties.store((Writer)(new PrintWriter(new File(PROPERTIES_PATH + currentUser.getUserName() + ".properties"))), null);
@@ -363,10 +382,13 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	}
 
 	public void invertImage() {
+		imageComponent.setImageInverted(!imageComponent.isImageInverted());
+		repaint();
 	}
 
 	public void toggleHighlight() {
 		imageComponent.setHighlightsVisible(!imageComponent.isHighlightsVisible());
+		repaint();
 	}
 
 	public void save() {
@@ -383,21 +405,27 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		imageComponent.setTranslation(newTranslateX, newTranslateY);
 		imageNavigator.setTranslation(newTranslateX, newTranslateY);
 		imageState.setTranslation(newTranslateX, newTranslateY);
+		repaint();
 	}
 
 	public void scaleChanged(double newScale) {
 		imageComponent.setScale(newScale);
 		imageNavigator.setScale(newScale);
 		imageState.setScale(newScale);
+		repaint();
 	}
 	
-	/*
-	public void windowResized(int newWidth, int newHeight) {
-		if(this.getWidth() != newWidth || this.getHeight() != newHeight) {
-			this.setPreferredSize(new Dimension(newWidth, newHeight));
-		}
+	/** --------------      Batch State Listener Functions **/
+
+	public void valueChanged(BatchState.Cell cell, String newValue) {
 	}
-	*/
+
+	public void selectedCellChanged(BatchState.Cell newSelectedCell) {
+		repaint();
+	}
+
+	public void batchLoaded() {
+	}
 
 	public IndexerController getController() {
 		return controller;

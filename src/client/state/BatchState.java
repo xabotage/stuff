@@ -12,6 +12,16 @@ public class BatchState {
 	private Cell selectedCell;
 	private List<BatchStateListener> listeners;
 	private String batchImageUrl;
+
+	public String getUrlBase() {
+		return urlBase;
+	}
+
+	public void setUrlBase(String urlBase) {
+		this.urlBase = urlBase;
+	}
+
+	private String urlBase;
 	
 	private Project project;
 	
@@ -76,9 +86,13 @@ public class BatchState {
 		}
 	}
 	
-	public void loadBatch(Project project, Batch batch) {
+	public void loadBatch(Project project, String imageUrl) {
 		values = new String[project.getRecordsPerImage()][project.getFields().size()];
-		batchImageUrl = batch.getImageFile();
+		selectedCell = new Cell();
+		selectedCell.record = 0;
+		selectedCell.field = 0;
+		this.project = project;
+		batchImageUrl = imageUrl;
 		for (BatchStateListener l : listeners) {
 			l.batchLoaded();
 		}
@@ -94,10 +108,9 @@ public class BatchState {
 	}
 
 	public interface BatchStateListener {
-
-		public void valueChanged(Cell cell, String newValue);
-		public void selectedCellChanged(Cell newSelectedCell);
-		public void batchLoaded();
+		void valueChanged(Cell cell, String newValue);
+		void selectedCellChanged(Cell newSelectedCell);
+		void batchLoaded();
 	}
 
 }
