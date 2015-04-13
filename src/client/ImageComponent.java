@@ -10,13 +10,20 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import client.state.BatchState;
+import client.state.BatchState.BatchStateListener;
+import client.state.BatchState.Cell;
+
 @SuppressWarnings("serial")
-public class ImageComponent extends JPanel {
+public class ImageComponent extends JPanel implements BatchStateListener {
+	private BatchState batchState;
 	private Image batchImage;
 	private Rectangle2D rect;
 
@@ -53,36 +60,25 @@ public class ImageComponent extends JPanel {
 		this.scale = scale;
 	}
 
-
-	/**
-	 * @return the imageInverted
-	 */
 	public boolean isImageInverted() {
 		return imageInverted;
 	}
 
-	/**
-	 * @param imageInverted the imageInverted to set
-	 */
 	public void setImageInverted(boolean imageInverted) {
 		this.imageInverted = imageInverted;
 	}
 
-	/**
-	 * @return the highlightsVisible
-	 */
 	public boolean isHighlightsVisible() {
 		return highlightsVisible;
 	}
 
-	/**
-	 * @param highlightsVisible the highlightsVisible to set
-	 */
 	public void setHighlightsVisible(boolean highlightsVisible) {
 		this.highlightsVisible = highlightsVisible;
 	}
 
-	public ImageComponent() {
+	public ImageComponent(BatchState batchState) {
+		this.batchState = batchState;
+		batchState.addListener(this);
 		rect = new Rectangle2D.Double(0, 0, 0, 0);
 		scale = 1.0;
 		translateX = translateY = 0;
@@ -172,6 +168,15 @@ public class ImageComponent extends JPanel {
 			Rectangle2D bounds = rect.getBounds2D();
 			g2.drawImage(batchImage, (int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMaxX(), (int)bounds.getMaxY(),
 					0, 0, batchImage.getWidth(null), batchImage.getHeight(null), null);
+			
+			if(highlightsVisible && batchState.getSelectedCell() != null) {
+				Cell c = batchState.getSelectedCell();
+				int x = batchState.getProject().getFields().get(c.field).getxCoord();
+				int y = batchState.getProject().getFirstYCoord() + (batchState.getProject().getRecordHeight() * c.record);
+				int width = batchState.getProject().getFields().get(c.field).getWidth();
+				int height = batchState.getProject().getRecordHeight();
+				g2.fillRect((int)bounds.getMinX() + x, (int)bounds.getMinY() + y, width, height);
+			}
 		}
 	}
 	
@@ -209,5 +214,26 @@ public class ImageComponent extends JPanel {
 	public interface ImageComponentListener {
 		void translationChanged(int newTranslateX, int newTranslateY);
 		void scaleChanged(double newScale);
+	}
+
+	@Override
+	public void valueChanged(Cell cell, String newValue) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void selectedCellChanged(Cell newSelectedCell) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void batchLoaded() {
+		try {
+			URL imageUrl = new URL(batchState.getBatchImageUrl());
+			batchImage = ImageIO.read(imageUrl);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

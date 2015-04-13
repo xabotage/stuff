@@ -86,6 +86,36 @@ public class IndexerController {
 		}
 	}
 	
+	public Project getCurrentUserProjectWithId(int projectId, User user) {
+		if(user.getCurrentBatch() == -1)
+			return null; 
+
+		ClientCommunicator cu = new ClientCommunicator(host, port);
+		GetProjects_Params params = new GetProjects_Params();
+		params.setUserName(user.getUserName());
+		params.setPassword(user.getPassword());
+
+		GetFields_Params fParams = new GetFields_Params();
+		fParams.setUserName(user.getUserName());
+		fParams.setPassword(user.getPassword());
+		
+		try {
+			GetProjects_Result result = cu.getProjects(params);
+			List<Project> projects = result.getProjects();
+			for(Project p : projects) {
+				if(p.getProjectId() == projectId) {
+					fParams.setProjectId(p.getProjectId());
+					p.setFields(cu.getFields(fParams).getFields());
+					return p;
+				}
+			}
+			return null;
+		} catch (ClientException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public String getSampleImageForProject(Project project, User user) {
 		try {
 			ClientCommunicator cu = new ClientCommunicator(host, port);
@@ -100,5 +130,22 @@ public class IndexerController {
 			return null;
 		}
 	}
+	
+	public Batch downloadBatch(Project project, User user) {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(host, port);
+			DownloadBatch_Params params = new DownloadBatch_Params();
+			params.setProjectId(project.getProjectId());
+			params.setUserName(user.getUserName());
+			params.setPassword(user.getPassword());
+			DownloadBatch_Result result = cu.downloadBatch(params);
+			result.setUrlBase("http://" + host + ":" + port + "/");
+			return result.getBatch();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 
 }

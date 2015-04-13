@@ -40,6 +40,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	private ImageButtonsPanel imageButtons;
 	private ImageComponent imageComponent;
 	private ImageNavigator imageNavigator;
+	private TableEntryPanel tableEntry;
+	private FormEntryPanel formEntry;
 
 	private JComboBox projectChooser; 
 	private JSplitPane mainSplitPane;
@@ -182,16 +184,22 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	}
 	
 	private void createSplitPaneComponents() {
-		imageComponent = new ImageComponent();
+		imageComponent = new ImageComponent(batchState);
 		imageComponent.addImageComponentListener(this);
 
 		imageNavigator = new ImageNavigator();
+		
+		tableEntry = new TableEntryPanel(batchState);
+		
+		formEntry = new FormEntryPanel(batchState);
 
 		mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		JTabbedPane leftTabbedPane = new JTabbedPane();
 		JTabbedPane rightTabbedPane = new JTabbedPane();
 
+		leftTabbedPane.add("Table Entry", tableEntry);
+		leftTabbedPane.add("Form Entry", formEntry);
 		rightTabbedPane.add("Image Navigator", imageNavigator);
 
 		bottomSplitPane.add(leftTabbedPane, JSplitPane.LEFT);
@@ -202,6 +210,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		add(mainSplitPane, BorderLayout.CENTER);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void displayDownloadBatchDialog() {
 		List<Project> projects = controller.getProjects(currentUser);
 		projectChooser = new JComboBox(projects.toArray());
@@ -219,7 +228,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		int result = JOptionPane.showOptionDialog(this, downloadBatchPanel, "Download New Batch", 
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 		if(result == JOptionPane.OK_OPTION) {
-			//controller.getNewBatch();
+			controller.downloadBatch((Project)projectChooser.getSelectedItem(), currentUser);
 		}
 	}
 	
@@ -279,6 +288,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 				bottomSplitPane.setDividerLocation(properties.getIntProperty("bottomSplitLocation"));
 				
 				// Batch properties
+				batchState.setBatchImageUrl(properties.getProperty("batchImageUrl"));
+				batchState.setProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser));
 			}
 			this.repaint();
 			this.revalidate();
@@ -308,6 +319,9 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 		properties.setIntProperty("mainSplitLocation", mainSplitPane.getDividerLocation());
 		properties.setIntProperty("bottomSplitLocation", bottomSplitPane.getDividerLocation());
 		
+		// Batch properties
+		properties.setProperty("batchImageUrl", batchState.getBatchImageUrl());
+
 		try {
 			properties.store((Writer)(new PrintWriter(new File(PROPERTIES_PATH + currentUser.getUserName() + ".properties"))), null);
 		} catch (Exception e) {
@@ -333,21 +347,34 @@ public class IndexerFrame extends JFrame implements ImageButtonListener, ImageCo
 	/** --------------      Image Buttons Listener Functions **/
 
 	public void zoomIn() {
+		double curScale = imageState.getScale();
+		if(curScale < 4.0) {
+			curScale += 0.25;
+			scaleChanged(curScale);
+		}
 	}
 
 	public void zoomOut() {
+		double curScale = imageState.getScale();
+		if(curScale > 0.25) {
+			curScale -= 0.25;
+			scaleChanged(curScale);
+		}
 	}
 
 	public void invertImage() {
 	}
 
 	public void toggleHighlight() {
+		imageComponent.setHighlightsVisible(!imageComponent.isHighlightsVisible());
 	}
 
 	public void save() {
+		saveUserProperties();
 	}
 
 	public void submit() {
+		//controller.submitBatch(currentUser);
 	}
 
 	/** --------------      Image Component Listener Functions **/
