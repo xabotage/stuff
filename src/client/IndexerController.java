@@ -6,6 +6,7 @@ import shared.model.User;
 import java.util.List;
 
 import client.communication.ClientCommunicator;
+import client.gui.IndexerFrame;
 import shared.model.*;
 
 public class IndexerController {

@@ -1,4 +1,4 @@
-package client;
+package client.gui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +23,10 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 
-import client.ImageButtonsPanel.ImageButtonListener;
+import client.IndexerController;
+import client.IndexerProperties;
+import client.gui.ImageButtonsPanel.ImageButtonListener;
+import client.gui.table.TableEntryPanel;
 import client.state.*;
 import shared.model.*;
 
@@ -44,6 +47,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	private ImageNavigator imageNavigator;
 	private TableEntryPanel tableEntry;
 	private FormEntryPanel formEntry;
+	private FieldHelpPanel fieldHelpPanel;
 
 	private JComboBox projectChooser; 
 	private JSplitPane mainSplitPane;
@@ -160,7 +164,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		logout.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				logout();
 			}
 		});
 		menu.add(logout);
@@ -194,6 +198,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		tableEntry = new TableEntryPanel(batchState);
 		
 		formEntry = new FormEntryPanel(batchState);
+		
+		fieldHelpPanel = new FieldHelpPanel(batchState);
 
 		mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -203,6 +209,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		leftTabbedPane.add("Table Entry", tableEntry);
 		leftTabbedPane.add("Form Entry", formEntry);
 		rightTabbedPane.add("Image Navigator", imageNavigator);
+		rightTabbedPane.add("Field Help", fieldHelpPanel);
 
 		bottomSplitPane.add(leftTabbedPane, JSplitPane.LEFT);
 		bottomSplitPane.add(rightTabbedPane, JSplitPane.RIGHT);
@@ -303,6 +310,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 				// Batch properties
 				if(currentUser.getCurrentBatch() != -1) { // user has a batch assigned
 					String imageUrl = properties.getProperty("batchImageUrl");
+					batchState.setValues(properties.getValuesProperty());
 					initializeBatchAndProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser), imageUrl);
 				}
 			}
@@ -339,6 +347,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		properties.setProperty("batchImageUrl", batchState.getBatchImageUrl());
 		if(batchState.getProject() != null) {
 			properties.setIntProperty("projectId", batchState.getProject().getProjectId());
+			properties.setValuesProperty(batchState.getValues());
 		}
 
 		try {

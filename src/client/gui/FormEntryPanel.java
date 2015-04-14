@@ -1,4 +1,4 @@
-package client;
+package client.gui;
 
 import java.awt.*;
 
@@ -21,7 +21,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 		super();
 		this.batchState = batchState;
 		batchState.addListener(this);
-
+		this.setLayout(new BorderLayout());
 	}
 
 	@Override

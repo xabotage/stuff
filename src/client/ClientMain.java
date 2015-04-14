@@ -4,6 +4,8 @@ import java.awt.*;
 
 import javax.swing.JOptionPane;
 
+import client.gui.IndexerFrame;
+
 
 public class ClientMain {
 
