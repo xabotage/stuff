@@ -52,6 +52,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 		this.updatingModel = true;
 		int record = recordNumList.getSelectedIndex();
 		for(FormEntryTextField tf : textFields) {
+			tf.spellCheck();
 			if(tf.hasFocus())
 				batchState.setValue(record, tf.getFieldNum(), tf.getText());
 		}
@@ -62,8 +63,10 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 	public void valueChanged(Cell cell, String newValue) {
 		if(cell.record != batchState.getSelectedCell().record || updatingModel)
 			return;
-		else
+		else {
 			textFields.get(cell.field).setText(newValue);
+			textFields.get(cell.field).spellCheck();
+		}
 	}
 		
 	@Override
@@ -88,19 +91,25 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 					c.record = source.getSelectedIndex();
 					c.field = batchState.getSelectedCell().field;
 					batchState.setSelectedCell(c);
+
 					for(FormEntryTextField tf : textFields) {
 						tf.setText(batchState.getValue(c.record, tf.getFieldNum()));
+						tf.spellCheck();
 					}
+
 				}
 			}
 		});
 
 		recordNumList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		recordNumList.setPreferredSize(new Dimension(100, 100));
+		//recordNumList.setPreferredSize(new Dimension(100, 100));
 		JScrollPane scrollPane = new JScrollPane(recordNumList);
+		scrollPane.setPreferredSize(new Dimension(100, 100));
 		this.add(scrollPane, BorderLayout.WEST);
 
-		this.formInputPanel = new JPanel(new GridLayout(batchState.getProject().getFields().size(), 2));
+		GridLayout gl = new GridLayout(batchState.getProject().getFields().size(), 2);
+		gl.setVgap(5);
+		this.formInputPanel = new JPanel(gl);
 		this.textFields = new ArrayList<>();
 		int fieldNum = 0; // TODO: start at 1 or 0?
 		for(Field f : batchState.getProject().getFields()) {
@@ -112,7 +121,10 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 			fieldNum++;
 		}
 		
-		this.add(formInputPanel, BorderLayout.CENTER);
+		JScrollPane scrollPane2 = new JScrollPane(formInputPanel);
+		scrollPane.setPreferredSize(new Dimension(100, textFields.size()*15));
+
+		this.add(scrollPane2, BorderLayout.CENTER);
 		recordNumList.setSelectedIndex(0);
 	}
 }

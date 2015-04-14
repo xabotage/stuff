@@ -163,7 +163,7 @@ public class BatchState {
 			return true;
 
 		for(String known : knownData) {
-			if(known.equals(value))
+			if(known.toLowerCase().equals(value.toLowerCase()))
 				return true;
 		}
 		return false;

@@ -204,6 +204,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		formEntry = new FormEntryPanel(batchState);
 		
 		fieldHelpPanel = new FieldHelpPanel(batchState);
+		JScrollPane fieldHelpScroller = new JScrollPane(fieldHelpPanel);
 
 		mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -213,7 +214,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		leftTabbedPane.add("Table Entry", tableEntry);
 		leftTabbedPane.add("Form Entry", formEntry);
 		rightTabbedPane.add("Image Navigator", imageNavigator);
-		rightTabbedPane.add("Field Help", fieldHelpPanel);
+		rightTabbedPane.add("Field Help", fieldHelpScroller);
 
 		bottomSplitPane.add(leftTabbedPane, JSplitPane.LEFT);
 		bottomSplitPane.add(rightTabbedPane, JSplitPane.RIGHT);
