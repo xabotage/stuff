@@ -23,7 +23,7 @@ public class IndexerProperties extends Properties {
 		int fieldCount = recordStrings[0].split(",", 200).length;
 		String[][] values = new String[recordStrings.length][fieldCount];
 		for(int i = 0; i < recordStrings.length; i++) {
-			values[i] = StringUtils.split(recordStrings[i], ",");
+			values[i] = recordStrings[i].split(",", 200);
 		}
 		return values;
 	}

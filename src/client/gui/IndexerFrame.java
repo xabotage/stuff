@@ -34,8 +34,8 @@ import shared.model.*;
 public class IndexerFrame extends JFrame implements ImageButtonListener,
 		ImageComponent.ImageComponentListener,
 		BatchState.BatchStateListener {
-	public static final int DEFAULT_WIDTH = 640;
-	public static final int DEFAULT_HEIGHT = 480;
+	public static final int DEFAULT_WIDTH = 800;
+	public static final int DEFAULT_HEIGHT = 600;
 	public static final String PROPERTIES_PATH = "userProperties/";
 
 
@@ -241,7 +241,9 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 		if(result == JOptionPane.OK_OPTION) {
 			Project p = (Project)projectChooser.getSelectedItem();
-			String imageUrl = controller.downloadBatch(p, currentUser).getImageFile();
+			Batch batch = controller.downloadBatch(p, currentUser);
+			String imageUrl = batch.getImageFile();
+			currentUser.setCurrentBatch(batch.getBatchId());
 			initializeBatchAndProject(p, imageUrl, new String[p.getRecordsPerImage()][p.getFields().size()]);
 		}
 	}
@@ -409,6 +411,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 
 	public void submit() {
 		controller.submitBatch(currentUser, batchState.getValues());
+		currentUser.setCurrentBatch(-1);
+		resetIndexerFrame();
 	}
 
 	/** --------------      Image Component Listener Functions **/
