@@ -64,14 +64,10 @@ public class TableEntryPanel extends JPanel implements BatchStateListener, Actio
 				if (row >= 0 && row < table.getRowCount() &&
 						column > 0 && column < table.getColumnCount()) {
 					String val = (String)tableModel.getValueAt(row, column);
-					batchState.setSelectedCell(row, column - 1);
-					popUpMenu.show(e.getComponent(), e.getX(), e.getY());
-					/*
-					Cell newCell = batchState.new Cell();
-					newCell.record = row;
-					newCell.field = column;
-					batchState.setSelectedCell(newCell);
-					*/
+					if(!batchState.knownDataContainsValueAtField(val, column - 1)) {
+						batchState.setSelectedCell(row, column - 1);
+						popUpMenu.show(e.getComponent(), e.getX(), e.getY());
+					}
 				}
 			}
 		}
@@ -133,7 +129,7 @@ public class TableEntryPanel extends JPanel implements BatchStateListener, Actio
 			TableColumn column = columnModel.getColumn(i);
 			column.setPreferredWidth(100);
 			if(i > 0) {
-				column.setCellRenderer(new IndexerCellRenderer());
+				column.setCellRenderer(new IndexerCellRenderer(batchState));
 				column.setHeaderValue(batchState.getProject().getFields().get(i - 1).getTitle());
 			} else {
 				column.setHeaderValue("Row");

@@ -10,12 +10,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellRenderer;
 
+import client.state.BatchState;
+
 @SuppressWarnings("serial")
 public class IndexerCellRenderer extends JTextField implements TableCellRenderer {
-	private Color misSpelledColor = new Color(255f, 128f, 128f);
-	public IndexerCellRenderer() {
+	private BatchState batchState;
+	private Color misSpelledColor = new Color(255, 28, 28);
+
+	public IndexerCellRenderer(BatchState batchState) {
 		super();
-		//this.setComponentPopupMenu(new PopUpMenu());
+		this.batchState = batchState;
 	}
 
 	@Override
@@ -25,8 +29,13 @@ public class IndexerCellRenderer extends JTextField implements TableCellRenderer
 		if(column == 0)
 			return new JLabel((String)value);
 		else if(!isSelected) {
-			setBackground(misSpelledColor);
-			return new JLabel((String)value);
+			JLabel returnLabel = new JLabel((String)value);
+			if(!batchState.knownDataContainsValueAtField((String)value, column - 1)) {
+				//returnLabel.setBackground(misSpelledColor);
+				returnLabel.setForeground(misSpelledColor);
+			} else
+				returnLabel.setBackground(table.getBackground());
+			return returnLabel;
 		} else {
 			setBackground(table.getSelectionBackground());
 			this.setText((String)value);

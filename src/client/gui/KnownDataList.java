@@ -10,7 +10,6 @@ import client.state.BatchState;
 public class KnownDataList extends JList {
 	public KnownDataList(BatchState batchState) {
 		super();
-		this.setPreferredSize(new Dimension(200, 300));
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		int field = batchState.getSelectedCell().field;
 		

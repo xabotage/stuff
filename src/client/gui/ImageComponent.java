@@ -26,6 +26,7 @@ import shared.model.Field;
 public class ImageComponent extends JPanel implements BatchStateListener {
 	private BatchState batchState;
 	private Image batchImage;
+	private Image invertedBatchImage;
 	private Rectangle2D rect;
 
 	private double scale;
@@ -211,24 +212,19 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 		if(batchImage != null) {
 			Graphics2D g2 = (Graphics2D)g;
 
-			/*
-			g2.translate(translateX, translateY);
-			g2.scale(scale, scale);
-			*/
 			g2.translate(this.getWidth() / 2.0, this.getHeight() / 2.0);
 			g2.scale(scale, scale);
 			g2.translate(-batchImage.getWidth(null)/2.0 + translateX, 
 					-batchImage.getHeight(null)/2.0 + translateY);
 			Rectangle2D bounds = rect.getBounds2D();
-			/*
-			Image finalImage = new BufferedImage(batchImage);
+			
 			if(imageInverted) {
-				RescaleOp inverter = new RescaleOp(-1f, 255f, null);
-				batchImage = op.filter((BufferedImage)batchImage, null);
+				g2.drawImage(invertedBatchImage, (int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMaxX(), (int) bounds.getMaxY(),
+						0, 0, invertedBatchImage.getWidth(null), invertedBatchImage.getHeight(null), null);
+			} else {
+				g2.drawImage(batchImage, (int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMaxX(), (int) bounds.getMaxY(),
+						0, 0, batchImage.getWidth(null), batchImage.getHeight(null), null);
 			}
-			*/
-			g2.drawImage(batchImage, (int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMaxX(), (int) bounds.getMaxY(),
-					0, 0, batchImage.getWidth(null), batchImage.getHeight(null), null);
 			
 			if(highlightsVisible && batchState.getSelectedCell() != null) {
 				Cell c = batchState.getSelectedCell();
@@ -294,6 +290,8 @@ public class ImageComponent extends JPanel implements BatchStateListener {
 		try {
 			URL imageUrl = new URL(batchState.getUrlBase() + batchState.getBatchImageUrl());
 			batchImage = ImageIO.read(imageUrl);
+			RescaleOp inverter = new RescaleOp(-1f, 255f, null);
+			invertedBatchImage = inverter.filter((BufferedImage)batchImage, null);
 			rect = new Rectangle2D.Double(0, 0, batchImage.getWidth(null), batchImage.getHeight(null));
 		} catch (Exception ex) {
 			ex.printStackTrace();

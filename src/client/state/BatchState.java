@@ -1,11 +1,14 @@
 package client.state;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-import shared.model.Batch;
 import shared.model.Project;
 
 public class BatchState {
@@ -14,6 +17,7 @@ public class BatchState {
 	private Cell selectedCell;
 	private List<BatchStateListener> listeners;
 	private String batchImageUrl;
+	private Map<Integer, List<String>> knownDataMap;
 
 	public String getUrlBase() {
 		return urlBase;
@@ -108,6 +112,7 @@ public class BatchState {
 	
 	public void loadBatch(Project project, String imageUrl, String[][] newValues) {
 		values = newValues;
+		knownDataMap = new HashMap<Integer, List<String>>();
 		selectedCell = new Cell();
 		selectedCell.record = 0;
 		selectedCell.field = 0;
@@ -122,6 +127,9 @@ public class BatchState {
 		if(project == null)
 			return null;
 		
+		if(knownDataMap.containsKey(field))
+			return knownDataMap.get(field);
+		
 		List<String> data = new ArrayList<String>();
 		String knownDataFile = this.project.getFields().get(field).getKnownData();
 
@@ -129,24 +137,31 @@ public class BatchState {
 			return data;
 
 		try {
-			Scanner scan = new Scanner(new File(this.getUrlBase() + knownDataFile));
+			InputStream fileStream = new URL(getUrlBase() + knownDataFile).openStream();
+			Scanner scan = new Scanner(fileStream);
 			while(scan.hasNextLine()) {
 				String line = scan.nextLine();
 				for(String val : line.split(","))
 					data.add(val);
 			}
 			scan.close();
+			fileStream.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return data;
 		}
+		knownDataMap.put(field, data);
 		return data;
 	}
 	
 	public boolean knownDataContainsValueAtField(String value, int field) {
+		if(value == null || value.equals(""))
+			return true;
+		
 		List<String> knownData = getKnownDataForField(field);
 		if(knownData == null || knownData.size() == 0)
 			return true;
+
 		for(String known : knownData) {
 			if(known.equals(value))
 				return true;
