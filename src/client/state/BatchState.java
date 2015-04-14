@@ -1,7 +1,9 @@
 package client.state;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import shared.model.Batch;
 import shared.model.Project;
@@ -97,6 +99,13 @@ public class BatchState {
 		}
 	}
 	
+	public void setSelectedCell(int record, int field) {
+		Cell c = new Cell();
+		c.record = record;
+		c.field = field;
+		setSelectedCell(c);
+	}
+	
 	public void loadBatch(Project project, String imageUrl, String[][] newValues) {
 		values = newValues;
 		selectedCell = new Cell();
@@ -107,6 +116,42 @@ public class BatchState {
 		for (BatchStateListener l : listeners) {
 			l.batchLoaded();
 		}
+	}
+	
+	public List<String> getKnownDataForField(int field) {
+		if(project == null)
+			return null;
+		
+		List<String> data = new ArrayList<String>();
+		String knownDataFile = this.project.getFields().get(field).getKnownData();
+
+		if(knownDataFile == null || knownDataFile.equals(""))
+			return data;
+
+		try {
+			Scanner scan = new Scanner(new File(this.getUrlBase() + knownDataFile));
+			while(scan.hasNextLine()) {
+				String line = scan.nextLine();
+				for(String val : line.split(","))
+					data.add(val);
+			}
+			scan.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return data;
+		}
+		return data;
+	}
+	
+	public boolean knownDataContainsValueAtField(String value, int field) {
+		List<String> knownData = getKnownDataForField(field);
+		if(knownData == null || knownData.size() == 0)
+			return true;
+		for(String known : knownData) {
+			if(known.equals(value))
+				return true;
+		}
+		return false;
 	}
 	
 	public Cell getSelectedCell() {

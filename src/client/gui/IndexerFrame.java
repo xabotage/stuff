@@ -64,9 +64,11 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 
 	private IndexerProperties properties;
 
-	public IndexerFrame() {
+	public IndexerFrame(IndexerController controller) {
 		super();
-		this.setSize(IndexerFrame.DEFAULT_WIDTH, IndexerFrame.DEFAULT_HEIGHT);
+		//this.setSize(IndexerFrame.DEFAULT_WIDTH, IndexerFrame.DEFAULT_HEIGHT);
+		this.controller = controller;
+		this.currentUser = null;
 		this.setTitle("Record Indexer");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
@@ -78,15 +80,14 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 				System.exit(0);
 			}
 		});
-		
 		resetIndexerFrame();
 	}
 	
 	private void resetIndexerFrame() {
 		this.setVisible(false);
-		currentUser = null;
 		imageState = new ImageState();
 		batchState = new BatchState();
+		batchState.setUrlBase("http://" + controller.getHost() + ":" + controller.getPort() + "/");
 		batchState.addListener(this);
 		windowState = new WindowState();
 		properties = new IndexerProperties();
@@ -219,6 +220,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		mainSplitPane.add(bottomSplitPane, JSplitPane.BOTTOM);
 
 		mainSplitPane.add(imageComponent, JSplitPane.TOP);
+		mainSplitPane.setDividerLocation(400);
+		bottomSplitPane.setDividerLocation(300);
 		add(mainSplitPane, BorderLayout.CENTER);
 	}
 	
@@ -289,7 +292,6 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 
 	public void loadUserProperties() {
 		try {
-			batchState.setUrlBase("http://" + controller.getHost() + ":" + controller.getPort() + "/");
 			File propFile = new File(PROPERTIES_PATH + currentUser.getUserName() + ".properties");
 			if(!propFile.exists()) {
 				loadDefaultProperties();
@@ -370,7 +372,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		imageComponent.setImageInverted(false);
 		
 		// Window properties
-		this.setSize(640, 480);
+		this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		this.setLocation(200, 200);
 		mainSplitPane.setDividerLocation(400);
 		bottomSplitPane.setDividerLocation(240);
@@ -410,9 +412,15 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	}
 
 	public void submit() {
-		controller.submitBatch(currentUser, batchState.getValues());
-		currentUser.setCurrentBatch(-1);
-		resetIndexerFrame();
+		if(currentUser.getCurrentBatch() == -1) {
+			JOptionPane.showMessageDialog(this, "You have no batch to submit.", 
+					"Cannot Submit", JOptionPane.ERROR_MESSAGE);
+		} else {
+			controller.submitBatch(currentUser, batchState.getValues());
+			currentUser.setCurrentBatch(-1);
+			resetIndexerFrame();
+			this.setVisible(true);
+		}
 	}
 
 	/** --------------      Image Component Listener Functions **/

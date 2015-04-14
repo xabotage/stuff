@@ -16,8 +16,7 @@ public class IndexerController {
 	private String host;
 	private String urlBase;
 
-	public IndexerController(IndexerFrame indexerFrame, int port, String host) {
-		this.indexerFrame = indexerFrame;
+	public IndexerController(int port, String host) {
 		this.port = port;
 		this.host = host;
 		this.urlBase = "http://" + host + ":" + port + "/";

@@ -24,8 +24,9 @@ public class ClientMain {
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				IndexerFrame frame = new IndexerFrame();
-				frame.setController(new IndexerController(frame, fPort, fHost));
+				IndexerController controller = new IndexerController(fPort, fHost);
+				IndexerFrame frame = new IndexerFrame(controller);
+				controller.setIndexerFrame(frame);
 				frame.showLoginDialog();
 			}
 		});
