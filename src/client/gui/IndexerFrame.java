@@ -117,7 +117,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		//loginComp.add(executeButton);
 
 		int option = JOptionPane.showOptionDialog(this, loginComp, "Login", JOptionPane.OK_CANCEL_OPTION, 
-				JOptionPane.PLAIN_MESSAGE, null, null, null);
+				JOptionPane.PLAIN_MESSAGE, null, new String[] {"Log In", "Exit"}, "Log In");
 
 		if(option == JOptionPane.CLOSED_OPTION) {
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));

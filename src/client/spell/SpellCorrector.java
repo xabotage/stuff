@@ -1,4 +1,4 @@
-package spell;
+package client.spell;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spell.ITrie.INode;
+import client.spell.ITrie.INode;
 
 public class SpellCorrector implements ISpellCorrector {
 	

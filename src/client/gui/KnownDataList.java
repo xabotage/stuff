@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
-import spell.SpellCorrector;
+import client.spell.SpellCorrector;
 import client.state.BatchState;
 
 @SuppressWarnings({ "serial", "rawtypes" })

@@ -1,4 +1,4 @@
-package spell;
+package client.spell;
 
 import java.io.IOException;
 

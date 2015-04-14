@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import client.state.BatchState;
 import client.state.BatchState.Cell;
 
+@SuppressWarnings("serial")
 public class FormEntryTextField extends JTextField implements ActionListener {
 	private int fieldNum;
 	private BatchState batchState;
@@ -120,9 +121,13 @@ public class FormEntryTextField extends JTextField implements ActionListener {
 			 KnownDataList knownData = new KnownDataList(batchState);
 			 JScrollPane scroller = new JScrollPane(knownData);
 			 int option = JOptionPane.showOptionDialog(this, scroller, "Suggested Values", JOptionPane.OK_CANCEL_OPTION, 
-				JOptionPane.PLAIN_MESSAGE, null, null, null);
+				JOptionPane.PLAIN_MESSAGE, null, new String[] {"Use Suggestion", "Cancel"}, "Cancel");
 			 if(option == JOptionPane.OK_OPTION) {
 				 String newVal = (String)knownData.getSelectedValue();
+				 if(newVal == null || newVal.equals("")) {
+					 JOptionPane.showMessageDialog(this, "No value selected.", "Error", JOptionPane.ERROR_MESSAGE);
+					 actionPerformed(event);
+				 }
 				 batchState.setValue(batchState.getSelectedCell(), newVal);
 			 }
 		 }

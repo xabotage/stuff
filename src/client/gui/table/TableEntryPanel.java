@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -127,7 +128,8 @@ public class TableEntryPanel extends JPanel implements BatchStateListener, Actio
 		columnModel.getSelectionModel().addListSelectionListener(listSelectionListener);
 		for (int i = 0; i < tableModel.getColumnCount(); ++i) {
 			TableColumn column = columnModel.getColumn(i);
-			column.setPreferredWidth(100);
+			column.setPreferredWidth(80);
+			column.setMinWidth(60);
 			if(i > 0) {
 				column.setCellRenderer(new IndexerCellRenderer(batchState));
 				column.setHeaderValue(batchState.getProject().getFields().get(i - 1).getTitle());
@@ -137,8 +139,11 @@ public class TableEntryPanel extends JPanel implements BatchStateListener, Actio
 		}	
 		
 		JScrollPane scroller = new JScrollPane(table);
+		scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		table.setFillsViewportHeight(true);
-		scroller.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		//table.setPreferredScrollableViewportSize(new Dimension(100,100));
+		//scroller.setPreferredSize(new Dimension(100, 100));
 		this.add(scroller, BorderLayout.CENTER);
 		
 		popUpMenu = new JPopupMenu();
@@ -155,9 +160,13 @@ public class TableEntryPanel extends JPanel implements BatchStateListener, Actio
 			 KnownDataList knownData = new KnownDataList(batchState);
 			 JScrollPane scroller = new JScrollPane(knownData);
 			 int option = JOptionPane.showOptionDialog(this, scroller, "Suggested Values", JOptionPane.OK_CANCEL_OPTION, 
-				JOptionPane.PLAIN_MESSAGE, null, null, null);
+				JOptionPane.PLAIN_MESSAGE, null, new String[] {"Use Suggestion", "Cancel"}, "Cancel");
 			 if(option == JOptionPane.OK_OPTION) {
 				 String newVal = (String)knownData.getSelectedValue();
+				 if(newVal == null || newVal.equals("")) {
+					 JOptionPane.showMessageDialog(this, "No value selected.", "Error", JOptionPane.ERROR_MESSAGE);
+					 actionPerformed(event);
+				 }
 				 batchState.setValue(batchState.getSelectedCell(), newVal);
 			 }
 		 }

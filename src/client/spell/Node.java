@@ -1,4 +1,4 @@
-package spell;
+package client.spell;
 
 public class Node implements ITrie.INode {
 	private int value;

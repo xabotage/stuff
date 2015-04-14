@@ -1,4 +1,4 @@
-package spell;
+package client.spell;
 
 public class Trie implements ITrie {
 	private int wordCount;
