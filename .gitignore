@@ -3,6 +3,7 @@ build/
 demo/
 .project
 .classpath
+.settings/
 project1.iml
 .idea/
 log.txt*

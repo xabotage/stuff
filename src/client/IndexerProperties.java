@@ -43,6 +43,10 @@ public class IndexerProperties extends Properties {
 	public void setValuesProperty(String[][] values) {
 		String[] recordStrings = new String[values.length];
 		for(int i = 0; i < values.length; i++) {
+			for(int j = 0; j < values[i].length; j++) {
+				if(values[i][j] == null)
+					values[i][j] = "";
+			}
 			recordStrings[i] = StringUtils.join(values[i], ",");
 		}
 		String finalValuesString = StringUtils.join(recordStrings, ";");

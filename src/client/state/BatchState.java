@@ -66,9 +66,20 @@ public class BatchState {
 			l.valueChanged(cell, value);
 		}
 	}
+
+	public void setValue(int record, int field, String value) {
+		Cell c = new Cell();
+		c.field = field;
+		c.record = record;
+		setValue(c, value);
+	}
 	
 	public String getValue(Cell cell) {
 		return values[cell.record][cell.field];
+	}
+
+	public String getValue(int record, int field) {
+		return values[record][field];
 	}
 	
 	public String[][] getValues() {
@@ -86,8 +97,8 @@ public class BatchState {
 		}
 	}
 	
-	public void loadBatch(Project project, String imageUrl) {
-		values = new String[project.getRecordsPerImage()][project.getFields().size()];
+	public void loadBatch(Project project, String imageUrl, String[][] newValues) {
+		values = newValues;
 		selectedCell = new Cell();
 		selectedCell.record = 0;
 		selectedCell.field = 0;

@@ -17,13 +17,15 @@ public class FormEntryTextField extends JTextField {
 	
 	public FormEntryTextField(BatchState bState, int fieldNum) {
 		super();
+		this.setEditable(true);
+		this.setEnabled(true);
 		this.batchState = bState;
 		this.fieldNum = fieldNum;
 		this.isSpelledCorrectly = true;
 		this.addFocusListener(new FocusListener() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				// TODO check suggestions
+				//batchState.setValue(batchState.getSelectedCell(), getText());
 			}
 			
 			@Override
@@ -47,6 +49,7 @@ public class FormEntryTextField extends JTextField {
 
 	@Override
 	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		Color bg = null;
 		if(isSpelledCorrectly) {
 			bg = new Color(255, 255, 255);

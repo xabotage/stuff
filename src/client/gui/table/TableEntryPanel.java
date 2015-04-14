@@ -73,10 +73,9 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
 	
 	@Override
 	public void valueChanged(Cell cell, String newValue) {
-		if(isUpdating)
+	if(isUpdating)
 			return;
 		table.setValueAt(newValue, cell.record, cell.field + 1);
-		isUpdating = false;
 	}
 
 	@Override
@@ -101,6 +100,7 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
 				c.field = e.getColumn() - 1;
 				isUpdating = true;
 				batchState.setValue(c, (String)tableModel.getValueAt(e.getFirstRow(), e.getColumn()));
+				isUpdating = false;
 			}
 		});
 		table.getSelectionModel().addListSelectionListener(listSelectionListener);

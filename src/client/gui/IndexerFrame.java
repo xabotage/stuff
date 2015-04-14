@@ -42,6 +42,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	//private JFrame loginPanel;
 	private JMenuBar menuBar;
 	private JMenuItem downloadBatch;
+	private JMenuItem logoutMenuItem;
+	private JMenuItem exitMenuItem;
 	private ImageButtonsPanel imageButtons;
 	private ImageComponent imageComponent;
 	private ImageNavigator imageNavigator;
@@ -77,30 +79,26 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 			}
 		});
 		
+		resetIndexerFrame();
+	}
+	
+	private void resetIndexerFrame() {
+		this.setVisible(false);
+		currentUser = null;
 		imageState = new ImageState();
 		batchState = new BatchState();
 		batchState.addListener(this);
 		windowState = new WindowState();
 		properties = new IndexerProperties();
-		
-		/*
-		this.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
-				windowResized(e.getComponent().getWidth(), e.getComponent().getHeight());
-			}
-		});
-		*/
 
 		setupMenu();
 		addImageButtons();
 		createSplitPaneComponents();
-
-		this.setVisible(false);
-
 	}
 
 	public void showLoginDialog() {
 		JTextField userName = new JTextField(10);
+		userName.requestFocus();
 		JPasswordField password = new JPasswordField(10);
 		JComponent loginComp = new JPanel(new FlowLayout());
 		loginComp.add(new JLabel("User"));
@@ -160,23 +158,23 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		//downloadBatch.setEnabled(false);
 		menu.add(downloadBatch);
 
-		JMenuItem logout = new JMenuItem("Logout");
-		logout.addActionListener(new ActionListener() {
+		logoutMenuItem = new JMenuItem("Logout");
+		logoutMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				logout();
 			}
 		});
-		menu.add(logout);
+		menu.add(logoutMenuItem);
 
-		JMenuItem exit = new JMenuItem("Exit");
-		logout.addActionListener(new ActionListener() {
+		exitMenuItem = new JMenuItem("Exit");
+		exitMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				logoutAndExit();
 			}
 		});
-		menu.add(exit);
+		menu.add(exitMenuItem);
 
 		menuBar.add(menu);
 		menuBar.setVisible(true);
@@ -184,12 +182,17 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	}
 	
 	private void addImageButtons() {
+		if(imageButtons != null)
+			this.remove(imageButtons);
 		imageButtons = new ImageButtonsPanel();
 		imageButtons.addImageButtonListener(this);
 		add(imageButtons, BorderLayout.NORTH);
 	}
 	
 	private void createSplitPaneComponents() {
+		if(mainSplitPane != null)
+			this.remove(mainSplitPane);
+
 		imageComponent = new ImageComponent(batchState);
 		imageComponent.addImageComponentListener(this);
 
@@ -237,14 +240,15 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		int result = JOptionPane.showOptionDialog(this, downloadBatchPanel, "Download New Batch", 
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 		if(result == JOptionPane.OK_OPTION) {
-			String imageUrl = controller.downloadBatch((Project)projectChooser.getSelectedItem(), currentUser).getImageFile();
-			initializeBatchAndProject((Project) projectChooser.getSelectedItem(), imageUrl);
+			Project p = (Project)projectChooser.getSelectedItem();
+			String imageUrl = controller.downloadBatch(p, currentUser).getImageFile();
+			initializeBatchAndProject(p, imageUrl, new String[p.getRecordsPerImage()][p.getFields().size()]);
 		}
 	}
 
-	private void initializeBatchAndProject(Project project, String imageUrl) {
+	private void initializeBatchAndProject(Project project, String imageUrl, String[][] values) {
 		downloadBatch.setEnabled(false);
-		batchState.loadBatch(project, imageUrl);
+		batchState.loadBatch(project, imageUrl, values);
 	}
 	
 	private void displayImageSampleDialog(String sampleUrl) {
@@ -273,8 +277,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	
 	public void logout() {
 		saveUserProperties();
-		currentUser = null;
-		this.setVisible(false);
+		resetIndexerFrame();
 		showLoginDialog();
 	}
 
@@ -310,8 +313,8 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 				// Batch properties
 				if(currentUser.getCurrentBatch() != -1) { // user has a batch assigned
 					String imageUrl = properties.getProperty("batchImageUrl");
-					batchState.setValues(properties.getValuesProperty());
-					initializeBatchAndProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser), imageUrl);
+					String [][] values = properties.getValuesProperty();
+					initializeBatchAndProject(controller.getCurrentUserProjectWithId(properties.getIntProperty("projectId"), currentUser), imageUrl, values);
 				}
 			}
 		} catch (Exception e) {
@@ -405,7 +408,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 	}
 
 	public void submit() {
-		//controller.submitBatch(currentUser);
+		controller.submitBatch(currentUser, batchState.getValues());
 	}
 
 	/** --------------      Image Component Listener Functions **/

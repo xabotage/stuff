@@ -3,6 +3,7 @@ package client;
 import shared.communication.*;
 import shared.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import client.communication.ClientCommunicator;
@@ -145,6 +146,39 @@ public class IndexerController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	public void submitBatch(User user, String[][] values) {
+		try {
+			ClientCommunicator cu = new ClientCommunicator(host, port);
+			SubmitBatch_Params params = new SubmitBatch_Params();
+			params.setUserName(user.getUserName());
+			params.setPassword(user.getPassword());
+			Batch b = new Batch();
+			b.setBatchId(user.getCurrentBatch());
+			List<Record> records = new ArrayList<Record>();
+			int recordNum = 1;
+			for(String[] rs : values) {
+				Record record = new Record();
+				record.setRecordNum(recordNum);
+				record.setBatchId(b.getBatchId());
+				List<FieldValue> fvs = new ArrayList<FieldValue>();
+				for(String vs : rs) {
+					FieldValue fv = new FieldValue();
+					fv.setValue(vs);
+					fvs.add(fv);
+				}
+				record.setFieldValues(fvs);
+				records.add(record);
+				recordNum++;
+			}
+			b.setRecords(records);
+			params.setBatch(b);
+
+			cu.submitBatch(params);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
