@@ -1,6 +1,8 @@
 package client.gui;
 
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +74,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 	@Override
 	public void selectedCellChanged(Cell newSelectedCell) {
 		recordNumList.setSelectedIndex(newSelectedCell.record);
-		textFields.get(newSelectedCell.field).requestFocus();
+		textFields.get(newSelectedCell.field).requestFocusInWindow();
 	}
 
 	@Override
@@ -126,5 +128,9 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
 		this.add(scrollPane2, BorderLayout.CENTER);
 		recordNumList.setSelectedIndex(0);
+	}
+
+	public void setFocusForField() {
+		textFields.get(batchState.getSelectedCell().field).requestFocusInWindow();
 	}
 }

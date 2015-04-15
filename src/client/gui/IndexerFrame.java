@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,6 +74,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		this.setTitle("Record Indexer");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocation(200, 200);
+		this.setMinimumSize(new Dimension(640, 480));
 		this.setLayout(new BorderLayout());
 		
 		this.addWindowListener(new WindowAdapter() {
@@ -119,7 +122,7 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 		int option = JOptionPane.showOptionDialog(this, loginComp, "Login", JOptionPane.OK_CANCEL_OPTION, 
 				JOptionPane.PLAIN_MESSAGE, null, new String[] {"Log In", "Exit"}, "Log In");
 
-		if(option == JOptionPane.CLOSED_OPTION) {
+		if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION || option == JOptionPane.NO_OPTION) {
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
 		
@@ -213,6 +216,12 @@ public class IndexerFrame extends JFrame implements ImageButtonListener,
 
 		leftTabbedPane.add("Table Entry", tableEntry);
 		leftTabbedPane.add("Form Entry", formEntry);
+		leftTabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				formEntry.setFocusForField();
+			}
+		});
 		rightTabbedPane.add("Image Navigator", imageNavigator);
 		rightTabbedPane.add("Field Help", fieldHelpScroller);
 

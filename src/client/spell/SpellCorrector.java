@@ -120,10 +120,16 @@ public class SpellCorrector implements ISpellCorrector {
 		StringBuilder sbword;
 		ArrayList<String> results = new ArrayList<String>();
 		for(int i = 0; i < word.length(); i++) {
-			for(char c = 'a'; c <= 'z'; c++) {
+			for(char c = 'a'; c <= ('z' + 2); c++) {
+				if(c == ' ' + 1)
+					c = '-';
+				if(c == 'z' + 1)
+					c = ' ';
 				sbword = new StringBuilder(word);
 				sbword.replace(i, i+1, String.valueOf(c));
 				results.add(sbword.toString());
+				if(c == '-')
+					break;
 			}
 		}
 		return results;
@@ -133,10 +139,16 @@ public class SpellCorrector implements ISpellCorrector {
 		StringBuilder sbword;
 		ArrayList<String> results = new ArrayList<String>();
 		for(int i = 0; i <= word.length(); i++) {
-			for(char c = 'a'; c <= 'z'; c++) {
+			for(char c = 'a'; c <= ('z' + 2); c++) {
+				if(c == ' ' + 1)
+					c = '-';
+				if(c == 'z' + 1)
+					c = ' ';
 				sbword = new StringBuilder(word);
 				sbword.insert(i, c);
 				results.add(sbword.toString());
+				if(c == '-')
+					break;
 			}
 		}
 		return results;

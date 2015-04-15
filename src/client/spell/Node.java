@@ -6,7 +6,7 @@ public class Node implements ITrie.INode {
 	
 	public Node() {
 		value = 0;
-		nodes = new Node[26];
+		nodes = new Node[28];
 	}
 	
 	/**
@@ -23,11 +23,12 @@ public class Node implements ITrie.INode {
 		int desc = 0;
 		char c = word.charAt(0);
 		word.deleteCharAt(0);
-		if(nodes[c - 'a'] == null) {
-			nodes[c - 'a'] = new Node();
+		int ival = confirmIVal(c);
+		if(nodes[ival] == null) {
+			nodes[ival] = new Node();
 			desc++;
 		}
-		return desc + nodes[c - 'a'].addWord(word);
+		return desc + nodes[ival].addWord(word);
 	}
 	
 	public ITrie.INode findWord(StringBuilder word) {
@@ -39,12 +40,29 @@ public class Node implements ITrie.INode {
 		}
 		char c = word.charAt(0);
 		word.deleteCharAt(0);
-		if(nodes[c - 'a'] == null) {
+		int ival = confirmIVal(c);
+		if(nodes[ival] == null) {
 			return null;
 		}
 		else {
-			return nodes[c - 'a'].findWord(word);
+			return nodes[ival].findWord(word);
 		}
+	}
+	
+	private int confirmIVal(char c) {
+		int ival = 0;
+		switch(c) {
+		case ' ':
+			ival = 26;
+			break;
+		case '-':
+			ival = 27;
+			break;
+		default:
+			ival = c - 'a';
+			break;
+		}
+		return ival;
 	}
 	
 	public void stringify(StringBuilder output, StringBuilder currentWord) {
