@@ -1,12 +1,21 @@
 package client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.*;
+
 import static org.junit.Assert.*;
+import client.spell.*;
 
 public class ClientUnitTests {
-	
+	private SpellCorrector spell;
+	private List<String> possibleValues;
+
 	@Before
 	public void setup() {
+		spell = new SpellCorrector();
+		possibleValues = new ArrayList<String>();
 	}
 	
 	@After
@@ -14,10 +23,9 @@ public class ClientUnitTests {
 	}
 	
 	@Test
-	public void test_1() {		
-		assertEquals("OK", "OK");
-		assertTrue(true);
-		assertFalse(false);
+	public void testSingleEditDist() {		
+		String inputWord = "foo";
+		spell.getSimilarWords(inputWord, wordBase);
 	}
 
 	public static void main(String[] args) {
